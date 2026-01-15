@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mappatura Giovani Belluno</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --accent: #38bdf8;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            color: var(--accent);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 0.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        input[type="text"], input[type="email"], input[type="date"], select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: var(--bg);
+            color: white;
+            box-sizing: border-box;
+        }
+        .radio-group {
+            display: grid;
+            gap: 0.5rem;
+        }
+        .radio-option {
+            background: #334155;
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        .radio-option input {
+            margin-right: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg);
+            margin-top: 1rem;
+        }
+        .btn-secondary {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--muted);
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+        }
+        .hidden { display: none; }
+        .success-msg {
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Mappa Belluno</h1>
+        <p style="color: var(--muted)">Il tuo contributo definisce le politiche giovanili della provincia. Aiutaci a mappare i luoghi vivi del territorio.</p>
+    </div>
+
+    <div id="personal-section" class="card">
+        <div class="section-title">Profilo Utente</div>
+        <div class="form-group">
+            <label>Nome e Cognome</label>
+            <input type="text" id="user-name" placeholder="Es. Mario Rossi">
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="user-email" placeholder="nome@esempio.it">
+        </div>
+        <div class="form-group">
+            <label>Data di Nascita</label>
+            <input type="date" id="user-dob">
+        </div>
+        <button class="btn-primary" onclick="savePersonalData()">Continua</button>
+    </div>
+
+    <form id="place-form" class="card hidden">
+        <div id="user-greeting" style="font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem;"></div>
+        
+        <div class="section-title">Info Luogo</div>
+        
+        <div class="form-group">
+            <label>Nome del luogo / aggregazione</label>
+            <input type="text" id="place-name" required>
+        </div>
+
+        <div class="form-group">
+            <label>Tipologia prevalente</label>
+            <select id="place-type" required>
+                <option value="">Seleziona...</option>
+                <option value="centro-civico">Centro Civico / Sociale</option>
+                <option value="sport">Area Sportiva / Skatepark</option>
+                <option value="cultura">Biblioteca / Aula Studio</option>
+                <option value="bar">Bar / Ritrovo Informale</option>
+                <option value="aperto">Parco / Piazza</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Accessibilità</label>
+            <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="access" value="libero"> Libero e gratuito</label>
+                <label class="radio-option"><input type="radio" name="access" value="tessera"> Richiede tessera/iscrizione</label>
+                <label class="radio-option"><input type="radio" name="access" value="pagamento"> Ingresso a pagamento</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Gestione</label>
+            <select id="management" required>
+                <option value="">Seleziona...</option>
+                <option value="comune">Comune / Ente Pubblico</option>
+                <option value="associazione">Associazione / Volontariato</option>
+                <option value="privato">Privato</option>
+                <option value="autorganizzato">Gruppo autorganizzato</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Frequenza del target (14-30 anni)</label>
+            <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="crowd" value="alta"> Sempre affollato</label>
+                <label class="radio-option"><input type="radio" name="crowd" value="media"> Frequentato regolarmente</label>
+                <label class="radio-option"><input type="radio" name="crowd" value="bassa"> Poco conosciuto</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Quanto spesso ci vai?</label>
+            <select id="user-frequency">
+                <option value="quotidiano">Ogni giorno</option>
+                <option value="settimanale">Qualche volta a settimana</option>
+                <option value="mensile">Raramente</option>
+                <option value="mai">È la prima volta / Non lo frequento</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Qual è il tuo ruolo nel territorio?</label>
+            <select id="user-role">
+                <option value="studente">Studente</option>
+                <option value="lavoratore">Lavoratore</option>
+                <option value="attore-sociale">Attivista / Volontario</option>
+                <option value="altro">Cittadino residente</option>
+            </select>
+        </div>
+
+        <button type="button" class="btn-primary" onclick="submitForm()">Invia Segnalazione</button>
+        <button type="button" class="btn-secondary" onclick="resetUser()">Cambia utente (Reset dati)</button>
+    </form>
+
+    <div id="success-screen" class="card hidden">
+        <div class="success-msg">
+            <h2 style="color: var(--accent)">✓ Registrata!</h2>
+            <p>La tua risposta è stata registrata con successo.</p>
+            <button class="btn-primary" onclick="newEntry()">Inserisci un altro luogo</button>
+            <button class="btn-secondary" onclick="window.close()">Chiudi App</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const personalSection = document.getElementById('personal-section');
+    const placeForm = document.getElementById('place-form');
+    const successScreen = document.getElementById('success-screen');
+    const greeting = document.getElementById('user-greeting');
+
+    window.onload = function() {
+        const savedUser = localStorage.getItem('user_data');
+        if (savedUser) {
+            showPlaceForm(JSON.parse(savedUser).nome);
+        }
+    };
+
+    function savePersonalData() {
+        const nome = document.getElementById('user-name').value;
+        const email = document.getElementById('user-email').value;
+        const dob = document.getElementById('user-dob').value;
+
+        if (!nome || !email || !dob) {
+            alert("Compila tutti i dati personali per proseguire.");
+            return;
+        }
+
+        const userData = { nome, email, dob };
+        localStorage.setItem('user_data', JSON.stringify(userData));
+        showPlaceForm(nome);
+    }
+
+    function showPlaceForm(name) {
+        personalSection.classList.add('hidden');
+        successScreen.classList.add('hidden');
+        placeForm.classList.remove('hidden');
+        greeting.innerText = "Compilando come: " + name;
+    }
+
+    function submitForm() {
+        // Logica di invio simulata
+        placeForm.classList.add('hidden');
+        successScreen.classList.remove('hidden');
+    }
+
+    function newEntry() {
+        document.getElementById('place-form').reset();
+        successScreen.classList.add('hidden');
+        placeForm.classList.remove('hidden');
+    }
+
+    function resetUser() {
+        localStorage.removeItem('user_data');
+        location.reload();
+    }
+</script>
+
+</body>
+</html>
