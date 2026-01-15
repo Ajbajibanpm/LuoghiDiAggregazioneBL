@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mappatura Giovani Belluno</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         :root {
             --bg: #0f172a;
@@ -14,6 +15,7 @@
             --muted: #94a3b8;
             --input-bg: #0f172a;
             --border: #334155;
+            --error: #ef4444;
         }
         body {
             font-family: 'Inter', -apple-system, system-ui, sans-serif;
@@ -55,7 +57,7 @@
         .form-group { margin-bottom: 1.25rem; }
         label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text); }
         
-        select, input { 
+        select, input, textarea { 
             width: 100%; 
             padding: 0.85rem; 
             border-radius: 10px; 
@@ -64,324 +66,319 @@
             color: white; 
             box-sizing: border-box; 
             font-size: 0.95rem;
-            transition: all 0.2s ease;
+            font-family: inherit;
         }
-        select:focus, input:focus {
+        select:focus, input:focus, textarea:focus {
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 4px var(--accent-glow);
         }
 
-        .file-input-container {
-            position: relative;
-            width: 100%;
-            height: 120px;
-            border: 2px dashed var(--border);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        .social-row { display: flex; gap: 8px; margin-bottom: 8px; }
+        .btn-add { 
+            background: var(--accent-glow); 
+            color: var(--accent); 
+            border: 1px dashed var(--accent);
+            padding: 0.5rem;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            background: rgba(15, 23, 42, 0.3);
+            font-size: 0.8rem;
+            width: auto;
+            display: inline-block;
         }
-        .file-input-container:hover { border-color: var(--accent); background: var(--accent-glow); }
-        .file-input-container input { opacity: 0; position: absolute; width: 100%; height: 100%; cursor: pointer; }
-        .file-label { color: var(--muted); font-size: 0.85rem; pointer-events: none; }
-        .preview-img { display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+        
+        .photo-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 0.75rem; }
+        .photo-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.75rem;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+        }
+        
+        .preview-container {
+            width: 100%; height: 150px; border: 1px solid var(--border); border-radius: 10px;
+            display: none; overflow: hidden; margin-top: 10px; position: relative;
+        }
+        .preview-img { width: 100%; height: 100%; object-fit: cover; }
+        .remove-photo {
+            position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6);
+            color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;
+        }
         
         .other-input { margin-top: 0.75rem; display: none; border-color: var(--accent); }
         
-        button { 
-            width: 100%; 
-            padding: 1rem; 
-            border-radius: 12px; 
-            border: none; 
-            font-weight: 700; 
-            cursor: pointer; 
-        }
-        .btn-primary { 
-            background: var(--accent); 
-            color: #0f172a; 
-            margin-top: 1.5rem;
-            box-shadow: 0 4px 14px 0 rgba(56, 189, 248, 0.39);
-        }
-        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-        
-        .btn-secondary { 
-            background: transparent; 
-            color: var(--muted); 
-            border: 1px solid var(--border); 
-            margin-top: 1rem; 
-            font-size: 0.85rem; 
-        }
+        button { width: 100%; padding: 1rem; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; }
+        .btn-primary { background: var(--accent); color: #0f172a; margin-top: 1.5rem; }
+        .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); margin-top: 1rem; }
         
         .hidden { display: none; }
-        .summary-box { 
-            background: rgba(15, 23, 42, 0.5); 
-            padding: 1.5rem; 
-            border-radius: 12px; 
-            text-align: left; 
-            margin: 1.5rem 0; 
-            border-left: 3px solid var(--accent);
-        }
-        .summary-item { margin-bottom: 0.8rem; }
-        .summary-label { color: var(--muted); font-size: 0.65rem; text-transform: uppercase; display: block; margin-bottom: 0.2rem; }
-        .summary-value { font-weight: 500; }
+        #map { width: 100%; height: 300px; border-radius: 12px; margin: 1.5rem 0; border: 1px solid var(--border); z-index: 1; }
+        .popup-img { width: 100%; max-width: 150px; border-radius: 8px; margin-top: 8px; display: block; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="personal-section" class="card">
-        <h1 style="margin-top:0; font-size: 1.5rem;">Benvenuto</h1>
-        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem;">Configura il tuo profilo per iniziare la mappatura.</p>
-        
-        <div class="form-group"><label>Nome e Cognome</label><input type="text" id="user-name" placeholder="Mario Rossi"></div>
-        <div class="form-group"><label>Email</label><input type="email" id="user-email" placeholder="mario@esempio.it"></div>
-        <div class="form-group"><label>Data di Nascita</label><input type="date" id="user-dob"></div>
-        <div class="form-group">
-            <label>Dove vivi?</label>
-            <select id="user-origin" required>
-                <option value="" disabled selected>Seleziona provenienza...</option>
-                <option value="Area Belluno">Area Belluno</option>
-                <option value="Area Feltre">Area Feltre</option>
-                <option value="Cadore / Ampezzo / Comelico">Cadore / Ampezzo / Comelico</option>
-                <option value="Agordino">Agordino</option>
-                <option value="Fuori Provincia (BL)">Fuori Provincia</option>
-                <option value="Fuori Regione (Veneto)">Fuori Regione</option>
-                <option value="Estero">Estero</option>
-            </select>
-        </div>
+        <h1>Benvenuto</h1>
+        <div class="form-group"><label>Nome e Cognome *</label><input type="text" id="user-name" placeholder="Mario Rossi"></div>
+        <div class="form-group"><label>Email *</label><input type="email" id="user-email" placeholder="mario@esempio.it"></div>
+        <div class="form-group"><label>Data di Nascita *</label><input type="date" id="user-dob"></div>
         <button class="btn-primary" onclick="savePersonalData()">Inizia Mappatura</button>
     </div>
 
     <form id="place-form" class="card hidden">
-        <div id="user-greeting" style="font-size: 0.75rem; color: var(--accent); font-weight: bold; background: var(--accent-glow); padding: 4px 12px; border-radius: 20px; display: inline-block; margin-bottom: 1rem;"></div>
+        <div id="user-greeting" style="font-size: 0.75rem; color: var(--accent); font-weight: bold; margin-bottom: 1rem;"></div>
 
         <div class="section-title">Localizzazione</div>
         <div class="form-group">
-            <label>Comune</label>
-            <select id="main-loc" onchange="populateSubLocs()" required></select>
+            <label>Comune *</label>
+            <select id="main-loc" onchange="populateSubLocs()"></select>
         </div>
         <div class="form-group">
-            <label>Frazione / Località</label>
-            <select id="sub-loc" onchange="toggleOther(this, 'other-loc')" required disabled></select>
+            <label>Frazione / Località *</label>
+            <select id="sub-loc" onchange="toggleOther(this, 'other-loc')" disabled></select>
             <input type="text" id="other-loc" class="other-input" placeholder="Specifica località...">
         </div>
+        <div class="form-group">
+            <label>Indirizzo specifico *</label>
+            <input type="text" id="address" placeholder="es. Via Roma 12">
+        </div>
         
-        <div class="form-group"><label>Nome dello spazio</label><input type="text" id="place-name" placeholder="es. Skatepark Lambioi" required></div>
+        <div class="form-group"><label>Nome dello spazio *</label><input type="text" id="place-name" placeholder="es. Skatepark Lambioi"></div>
+
+        <div class="section-title">Tipologia</div>
+        <div class="form-group">
+            <label>Categoria *</label>
+            <select id="macro-type" onchange="updateSubTypes()">
+                <option value="" disabled selected>Seleziona categoria...</option>
+                <option value="pubblici">1. Spazi Pubblici e Aperti</option>
+                <option value="aggregazione">2. Centri di Aggregazione</option>
+                <option value="commerciali">3. Spazi Commerciali</option>
+                <option value="transito">4. Spazi di Transito</option>
+            </select>
+        </div>
+        <div id="sub-type-container" class="form-group hidden">
+            <label>Dettaglio Tipologia *</label>
+            <select id="sub-type" onchange="toggleOther(this, 'other-subtype')"></select>
+            <input type="text" id="other-subtype" class="other-input" placeholder="Descrivi il tipo...">
+        </div>
+
+        <div class="section-title">Media e Descrizione</div>
+        <div class="form-group">
+            <label>Descrizione</label>
+            <textarea id="place-desc" style="width:100%; height:80px; background:var(--input-bg); color:white; border:1px solid var(--border); border-radius:10px; padding:0.85rem;" placeholder="Racconta brevemente..."></textarea>
+        </div>
 
         <div class="form-group">
             <label>Foto dello spazio</label>
-            <div class="file-input-container" id="file-drop-zone">
-                <input type="file" id="place-photo" accept="image/*" capture="environment" onchange="handleFile(this)">
-                <div id="file-label-group" style="text-align: center;">
-                    <span style="font-size: 1.5rem;">📸</span><br>
-                    <span class="file-label">Scatta o carica una foto</span>
-                </div>
-                <img id="img-preview" class="preview-img">
+            <div class="photo-options">
+                <button type="button" class="photo-btn" onclick="document.getElementById('photo-capture').click()">📸 Scatta</button>
+                <button type="button" class="photo-btn" onclick="document.getElementById('photo-upload').click()">📁 Carica</button>
             </div>
+            <input type="file" id="photo-capture" accept="image/*" capture="environment" class="hidden" onchange="handleFile(this)">
+            <input type="file" id="photo-upload" accept="image/*" class="hidden" onchange="handleFile(this)">
+            <div id="preview-wrapper" class="preview-container"><img id="img-preview" class="preview-img"><button type="button" class="remove-photo" onclick="clearPhoto()">✕</button></div>
         </div>
 
-        <div class="section-title">Dettagli Luogo</div>
+        <div class="section-title">Gestione e Contatti</div>
         <div class="form-group">
-            <label>Tipologia di Spazio</label>
-            <select id="macro-type" onchange="updateSubTypes()" required>
-                <option value="" disabled selected>Seleziona categoria...</option>
-                <option value="pubblici">1. Spazi Pubblici e Aperti (es. parchi, piazze)</option>
-                <option value="aggregazione">2. Centri di Aggregazione (es. oratori, hub)</option>
-                <option value="commerciali">3. Spazi Commerciali (es. bar, cinema)</option>
-                <option value="transito">4. Spazi di Transito (es. stazioni, parcheggi)</option>
-            </select>
-            <select id="sub-type" class="other-input" style="margin-top:0.75rem;" onchange="toggleOther(this, 'other-subtype')" required></select>
-            <input type="text" id="other-subtype" class="other-input" placeholder="Descrivi il tipo di spazio...">
-        </div>
-
-        <div class="form-group">
-            <label>Gestione</label>
-            <select id="management" onchange="toggleManagementName(); toggleOther(this, 'other-mgmt')" required>
-                <option value="" disabled selected>Chi lo gestisce?</option>
+            <label>Chi lo gestisce? *</label>
+            <select id="management" onchange="toggleManagementName(); toggleOther(this, 'other-mgmt')">
+                <option value="" disabled selected>Seleziona...</option>
                 <option value="Amministrazione Pubblica">Amministrazione Pubblica</option>
                 <option value="Ente Religioso">Ente Religioso</option>
                 <option value="Impresa o Soggetto Privato">Impresa o Soggetto Privato</option>
                 <option value="Associazione o Cooperativa Sociale">Associazione o Cooperativa Sociale</option>
-                <option value="Gruppo Autogestito o Informale">Gruppo Autogestito o Informale</option>
                 <option value="non_so">Non lo so</option>
                 <option value="altro">Altro...</option>
             </select>
-            <input type="text" id="management-name" class="other-input" placeholder="Inserisci il nome del gestore...">
-            <input type="text" id="other-mgmt" class="other-input" placeholder="Specifica tipo di gestione...">
+            <input type="text" id="management-name" class="other-input" placeholder="Nome specifico gestore...">
+            <input type="text" id="other-mgmt" class="other-input" placeholder="Specifica tipo gestione...">
+        </div>
+
+        <div class="form-group">
+            <label>Social e Sito Web (max 5)</label>
+            <div id="social-container">
+                <div class="social-row"><input type="url" class="social-link" placeholder="https://..."></div>
+            </div>
+            <button type="button" id="add-social" class="btn-add" onclick="addSocialField()">+ Aggiungi link</button>
         </div>
 
         <button type="button" class="btn-primary" onclick="submitForm()">Registra Luogo</button>
-        <button type="button" class="btn-secondary" onclick="resetUser()">Cambia Profilo</button>
     </form>
 
     <div id="success-screen" class="card hidden" style="text-align:center;">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">📍</div>
-        <h2 style="color: var(--accent); margin-bottom: 0.5rem;">Luogo Mappato!</h2>
-        <div id="summary-container" class="summary-box"></div>
-        <button class="btn-primary" onclick="newEntry()">Aggiungi un altro luogo</button>
+        <h2 style="color: var(--accent);">Luogo Mappato!</h2>
+        <p style="font-size: 0.8rem; color: var(--muted);">Trascina il puntatore se la posizione non è corretta.</p>
+        <div id="map"></div>
+        <button class="btn-primary" onclick="location.reload()">Aggiungi un altro</button>
         <button class="btn-secondary" onclick="resetUser()">Esci</button>
     </div>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    const locationData = {
-        "Belluno": ["Antole", "Bolzano Bellunese", "Castion", "Cavessago", "Cet", "Chiesurazza", "Faverga", "Fiammoi", "Giamosa", "Giazzoi", "Levego", "Madeago", "Mier", "Nevegal", "Orzes", "Pedeserva", "Pra de Lante", "Rivamaor", "Sagrogna", "Sala", "Salce", "San Pietro in Campo", "Sopracroda", "Sois", "Sossai", "Tisoi", "Vezzano", "Vignole", "Visome"],
-        "Feltre": ["Anzù", "Arson", "Canal di Limana", "Cart", "Fastro", "Foen", "Lasen", "Mugnai", "Nemeggio", "Pont", "Pren", "Tomo", "Umin", "Vellai", "Vignui", "Villabruna", "Villapaiera", "Zermen"],
-        "Borgo Valbelluna": ["Mel", "Trichiana", "Lentiai", "Carve", "Cesana", "Col di Mel", "Confos", "Farra", "Marcador", "Morgan", "Nave", "Pellegai", "Ronchena", "Sant’Antonio Tortal", "Stabie", "Villa di Villa"],
-        "Sedico": ["Bribano", "Libano", "Roe Alte", "Roe Basse", "Mas", "Peron", "Seghe di Villa", "Gresane"],
-        "Alpago": ["Bastia", "Cornei", "Farra", "Garna", "Pieve", "Puos", "Sitran", "Tignes", "Torres", "Villa"],
-        "Ponte nelle Alpi": ["Cadola", "Canevoi", "Casan", "Col di Cugnan", "Cornolade", "Cugnan", "Lastreghe", "Paiane", "Polpet", "Quantin", "Revelin", "Roncan", "Soccher"],
-        "Cortina d’Ampezzo": ["Acquabona", "Alverà", "Campo di Sopra", "Chiave", "Col", "Grava", "Mortisa", "Pecol", "Socol", "Verocai", "Zuel"],
-        "Agordo": ["Bries", "Brugnach", "Parech", "Prompicai", "Rif", "Toccol", "Valcozzena"],
-        "Longarone": ["Castellavazzo", "Codissago", "Fortogna", "Igne", "Pirago", "Rivalta", "Roggia"],
-        "Santa Giustina": ["Cergnai", "Formegan", "Meano", "Ignan", "Sartena"],
-        "Limana": ["Canè", "Cesa", "Coi di Navasa", "Dussoi", "Polentes", "Valmorel", "Triches"],
-        "Pieve di Cadore": ["Nebbiù", "Pozzale", "Sottocastello", "Tai di Cadore"],
-        "Auronzo di Cadore": ["Misurina", "Reane", "San Marco", "Villapiccola", "Villagrande"],
-        "Val di Zoldo": ["Forno", "Dont", "Fusine", "Mareson", "Pecol", "Pieve", "Coi"],
-        "Cesiomaggiore": ["Alivie", "Busche", "Cesiola", "Col San Vito", "Cullagne", "Dorgnan", "Marsiai", "Menin", "Molinello", "Montagne", "Morzanch", "Nezze", "Pez", "Pullir", "Soranzen", "Toschian"],
-        "Pedavena": ["Facen", "Murle", "Norcen", "Teven", "Travagola"],
-        "Arsiè": ["Fastro", "Incino", "Mellame", "Rocca", "Rivai", "San Vito"],
-        "Sospirolo": ["Gron", "Maras", "Mis", "Oregne", "Pascoli", "San Gottardo"],
-        "Sovramonte": ["Aune", "Faller", "Molinello", "Moline", "Servo", "Sorriva", "Zorzoi"],
-        "Quero Vas": ["Caorera", "Carpen", "Quero", "Santa Maria", "Schievenin", "Vas"]
-    };
+    let map, marker, lastPhotoData = null;
 
     const categoryData = {
-        "pubblici": ["Aree verdi e Parchi", "Piazze e Spazi pedonali", "Sport all’aperto", "Sosta informale"],
+        "pubblici": ["Aree verdi e Parchi", "Piazze e Spazi pedonali", "Sport all'aperto", "Sosta informale"],
         "aggregazione": ["Hub creativi e Co-working", "Biblioteche e Aule studio", "Spazi Associativi e Religiosi", "Centri Giovani Istituzionali"],
         "commerciali": ["Locali di Ristorazione", "Centri Commerciali", "Divertimento e Spettacolo", "Impianti Sportivi Privati"],
-        "transito": ["Nodi di Trasporto", "Aree di Risulta e Parcheggi", "Luoghi Dismessi o Abbandonati"]
+        "transito": ["Nodi di Trasporto", "Aree di Risulta e Parcheggi", "Luoghi Dismessi"]
     };
 
-    const mainSel = document.getElementById('main-loc');
-    mainSel.innerHTML = '<option value="" disabled selected>Scegli Comune...</option>';
-    Object.keys(locationData).sort().forEach(loc => {
-        let opt = document.createElement('option');
-        opt.value = loc; opt.textContent = loc;
-        mainSel.appendChild(opt);
-    });
+const locationData = {
+    "Belluno": ["Antole", "Bolzano Bellunese", "Castion", "Cavessago", "Cet", "Chiesurazza", "Faverga", "Fiammoi", "Giamosa", "Giazzoi", "Levego", "Madeago", "Mier", "Nevegal", "Orzes", "Pedeserva", "Pra de Lante", "Rivamaor", "Sagrogna", "Sala", "Salce", "San Pietro in Campo", "Sopracroda", "Sois", "Sossai", "Tisoi", "Vezzano", "Vignole", "Visome"],
+    "Feltre": ["Anzù", "Arson", "Canal di Limana", "Cart", "Fastro", "Foen", "Lasen", "Mugnai", "Nemeggio", "Pont", "Pren", "Tomo", "Umin", "Vellai", "Vignui", "Villabruna", "Villapaiera", "Zermen"],
+    "Borgo Valbelluna": ["Mel", "Trichiana", "Lentiai", "Carve", "Cesana", "Col di Mel", "Confos", "Farra", "Marcador", "Morgan", "Nave", "Pellegai", "Ronchena", "Sant'Antonio Tortal", "Stabie", "Villa di Villa"],
+    "Sedico": ["Bribano", "Libano", "Roe Alte", "Roe Basse", "Mas", "Peron", "Seghe di Villa", "Gresane"],
+    "Alpago": ["Bastia", "Cornei", "Farra", "Garna", "Pieve", "Puos", "Sitran", "Tignes", "Torres", "Villa"],
+    "Ponte nelle Alpi": ["Cadola", "Canevoi", "Casan", "Col di Cugnan", "Cornolade", "Cugnan", "Lastreghe", "Paiane", "Polpet", "Quantin", "Revelin", "Roncan", "Soccher"],
+    "Cortina d'Ampezzo": ["Acquabona", "Alverà", "Campo di Sopra", "Chiave", "Col", "Grava", "Mortisa", "Pecol", "Socol", "Verocai", "Zuel"],
+    "Agordo": ["Bries", "Brugnach", "Parech", "Prompicai", "Rif", "Toccol", "Valcozzena"],
+    "Longarone": ["Castellavazzo", "Codissago", "Fortogna", "Igne", "Pirago", "Rivalta", "Roggia"],
+    "Santa Giustina": ["Cergnai", "Formegan", "Meano", "Ignan", "Sartena"],
+    "Limana": ["Canè", "Cesa", "Coi di Navasa", "Dussoi", "Polentes", "Valmorel", "Triches"],
+    "Pieve di Cadore": ["Nebbiù", "Pozzale", "Sottocastello", "Tai di Cadore"],
+    "Auronzo di Cadore": ["Misurina", "Reane", "San Marco", "Villapiccola", "Villagrande"],
+    "Val di Zoldo": ["Forno", "Dont", "Fusine", "Mareson", "Pecol", "Pieve", "Coi"],
+    "Cesiomaggiore": ["Alivie", "Busche", "Cesiola", "Col San Vito", "Cullagne", "Dorgnan", "Marsiai", "Menin", "Molinello", "Montagne", "Morzanch", "Nezze", "Pez", "Pullir", "Soranzen", "Toschian"],
+    "Pedavena": ["Facen", "Murle", "Norcen", "Teven", "Travagola"],
+    "Arsiè": ["Fastro", "Incino", "Mellame", "Rocca", "Rivai", "San Vito"],
+    "Sospirolo": ["Gron", "Maras", "Mis", "Oregne", "Pascoli", "San Gottardo"],
+    "Sovramonte": ["Aune", "Faller", "Molinello", "Moline", "Servo", "Sorriva", "Zorzoi"],
+    "Quero Vas": ["Caorera", "Carpen", "Quero", "Santa Maria", "Schievenin", "Vas"]
+};
+
+
+    function addSocialField() {
+        const container = document.getElementById('social-container');
+        const count = container.querySelectorAll('.social-row').length;
+        if (count < 5) {
+            const div = document.createElement('div');
+            div.className = 'social-row';
+            div.innerHTML = '<input type="url" class="social-link" placeholder="https://...">';
+            container.appendChild(div);
+            if (count + 1 === 5) document.getElementById('add-social').style.display = 'none';
+        }
+    }
+
+    function applyRequiredRules() {
+        document.querySelectorAll('.form-group').forEach(group => {
+            const label = group.querySelector('label');
+            const input = group.querySelector('input, select, textarea');
+            if (label && input && label.innerText.includes('*')) input.required = true;
+        });
+    }
 
     function handleFile(input) {
-        const preview = document.getElementById('img-preview');
-        const label = document.getElementById('file-label-group');
         if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = e => {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-                label.style.display = 'none';
+                lastPhotoData = e.target.result;
+                document.getElementById('img-preview').src = lastPhotoData;
+                document.getElementById('preview-wrapper').style.display = 'block';
             }
             reader.readAsDataURL(input.files[0]);
         }
     }
 
+    function clearPhoto() { lastPhotoData = null; document.getElementById('preview-wrapper').style.display = 'none'; }
+
     function populateSubLocs() {
         const subSel = document.getElementById('sub-loc');
-        const selectedCity = mainSel.value;
-        subSel.innerHTML = '<option value="" disabled selected>Scegli Località...</option>';
-        if (selectedCity) {
-            let centerOpt = document.createElement('option');
-            centerOpt.value = selectedCity + " Centro";
-            centerOpt.textContent = selectedCity + " Centro";
-            subSel.appendChild(centerOpt);
-            locationData[selectedCity].sort().forEach(s => {
-                let opt = document.createElement('option');
-                opt.value = s; opt.textContent = s;
-                subSel.appendChild(opt);
-            });
+        const city = document.getElementById('main-loc').value;
+        subSel.innerHTML = '<option value="" disabled selected>Scegli...</option>';
+        if (city) {
+            locationData[city].forEach(s => subSel.innerHTML += `<option value="${s}">${s}</option>`);
             subSel.innerHTML += '<option value="altro">Altro...</option>';
             subSel.disabled = false;
         }
     }
 
+    const mainSel = document.getElementById('main-loc');
+    mainSel.innerHTML = '<option value="" disabled selected>Comune...</option>';
+    Object.keys(locationData).forEach(loc => mainSel.innerHTML += `<option value="${loc}">${loc}</option>`);
+
     function updateSubTypes() {
         const macro = document.getElementById('macro-type').value;
         const subSel = document.getElementById('sub-type');
-        subSel.innerHTML = '<option value="" disabled selected>Scegli sottotipologia...</option>';
+        const container = document.getElementById('sub-type-container');
+        subSel.innerHTML = '<option value="" disabled selected>Scegli dettaglio...</option>';
         if (categoryData[macro]) {
-            categoryData[macro].forEach(text => {
-                let opt = document.createElement('option');
-                opt.value = text; opt.textContent = text;
-                subSel.appendChild(opt);
-            });
+            categoryData[macro].forEach(t => subSel.innerHTML += `<option value="${t}">${t}</option>`);
             subSel.innerHTML += '<option value="altro">Altro...</option>';
-            subSel.style.display = 'block';
-            subSel.required = true;
+            container.classList.remove('hidden');
         }
     }
 
     function toggleManagementName() {
-        const mgmtVal = document.getElementById('management').value;
-        const nameInput = document.getElementById('management-name');
-        nameInput.style.display = (mgmtVal && !['non_so', 'altro'].includes(mgmtVal)) ? 'block' : 'none';
-        nameInput.required = nameInput.style.display === 'block';
+        const mgmt = document.getElementById('management').value;
+        document.getElementById('management-name').style.display = (mgmt && !['non_so', 'altro'].includes(mgmt)) ? 'block' : 'none';
     }
 
     function toggleOther(select, inputId) {
-        const input = document.getElementById(inputId);
-        input.style.display = (select.value === "altro") ? "block" : "none";
-        input.required = (select.value === "altro");
+        document.getElementById(inputId).style.display = (select.value === "altro") ? "block" : "none";
     }
 
     function savePersonalData() {
         const nome = document.getElementById('user-name').value;
-        const email = document.getElementById('user-email').value;
-        const dob = document.getElementById('user-dob').value;
-        const origin = document.getElementById('user-origin').value;
-        if (!nome || !email || !dob || !origin) return alert("Completa il tuo profilo");
-        localStorage.setItem('user_data', JSON.stringify({nome, email, dob, origin}));
+        if (!nome) return alert("Inserisci il nome");
+        localStorage.setItem('user_data', JSON.stringify({nome}));
         showForm(nome);
-    }
-
-    function checkUserStatus() {
-        const saved = localStorage.getItem('user_data');
-        if (saved) showForm(JSON.parse(saved).nome);
     }
 
     function showForm(name) {
         document.getElementById('personal-section').classList.add('hidden');
-        document.getElementById('success-screen').classList.add('hidden');
         document.getElementById('place-form').classList.remove('hidden');
-        document.getElementById('user-greeting').innerText = name;
+        document.getElementById('user-greeting').innerText = `Ciao ${name}!`;
     }
 
-    function submitForm() {
+    async function submitForm() {
         const form = document.getElementById('place-form');
-        if(!form.checkValidity()) { form.reportValidity(); return; }
-        const getVal = (id, otherId) => {
-            const s = document.getElementById(id);
-            return s.value === "altro" ? document.getElementById(otherId).value : s.value;
-        };
-        const summaryHTML = `
-            <div class="summary-item"><span class="summary-label">Luogo</span><span class="summary-value">${document.getElementById('place-name').value}</span></div>
-            <div class="summary-item"><span class="summary-label">Zona</span><span class="summary-value">${getVal('sub-loc', 'other-loc')} (${mainSel.value})</span></div>
-            <div class="summary-item"><span class="summary-label">Tipologia</span><span class="summary-value">${getVal('sub-type', 'other-subtype')}</span></div>
-        `;
-        document.getElementById('summary-container').innerHTML = summaryHTML;
+        if(!form.checkValidity()) return form.reportValidity();
+        
+        const spaceName = document.getElementById('place-name').value;
+        const address = document.getElementById('address').value;
+        const commune = document.getElementById('main-loc').value;
+
         document.getElementById('place-form').classList.add('hidden');
         document.getElementById('success-screen').classList.remove('hidden');
+
+        if (!map) {
+            map = L.map('map').setView([46.14, 12.21], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        }
+
+        const query = `${address}, ${commune}, Belluno, Italy`;
+        try {
+            const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+            const data = await resp.json();
+            const latlng = data.length > 0 ? [data[0].lat, data[0].lon] : [46.14, 12.21];
+            
+            map.setView(latlng, 16);
+            if (marker) marker.remove();
+            
+            marker = L.marker(latlng, {draggable: true}).addTo(map);
+            let content = `<b>${spaceName}</b>`;
+            if (lastPhotoData) content += `<br><img src="${lastPhotoData}" class="popup-img">`;
+            marker.bindPopup(content).openPopup();
+        } catch (e) {}
+        
+        setTimeout(() => map.invalidateSize(), 200);
     }
 
-    function newEntry() {
-        document.getElementById('place-form').reset();
-        document.getElementById('img-preview').style.display = 'none';
-        document.getElementById('file-label-group').style.display = 'block';
-        document.querySelectorAll('.other-input').forEach(i => i.style.display = 'none');
-        checkUserStatus();
-    }
+    function resetUser() { localStorage.removeItem('user_data'); location.reload(); }
 
-    function resetUser() {
-        localStorage.removeItem('user_data');
-        location.reload();
-    }
-
-    window.onload = checkUserStatus;
+    window.onload = () => {
+        applyRequiredRules();
+        const saved = localStorage.getItem('user_data');
+        if (saved) showForm(JSON.parse(saved).nome);
+    };
 </script>
 </body>
 </html>
