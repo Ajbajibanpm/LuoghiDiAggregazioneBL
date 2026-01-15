@@ -107,6 +107,13 @@
             position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6);
             color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;
         }
+
+        #camera-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; z-index: 1000; flex-direction: column; align-items: center; justify-content: center;
+        }
+        #camera-stream { width: 100%; max-width: 480px; height: auto; }
+        .camera-controls { margin-top: 20px; display: flex; gap: 20px; }
         
         .other-input { margin-top: 0.75rem; display: none; border-color: var(--accent); }
         
@@ -120,6 +127,14 @@
     </style>
 </head>
 <body>
+
+<div id="camera-modal">
+    <video id="camera-stream" autoplay playsinline></video>
+    <div class="camera-controls">
+        <button class="btn-primary" style="width: 70px; height: 70px; border-radius: 50%;" onclick="captureSnapshot()">📸</button>
+        <button class="btn-secondary" style="width: auto; padding: 0 20px;" onclick="stopCamera()">Annulla</button>
+    </div>
+</div>
 
 <div class="container">
     <div id="personal-section" class="card">
@@ -176,10 +191,9 @@
         <div class="form-group">
             <label>Foto dello spazio</label>
             <div class="photo-options">
-                <button type="button" class="photo-btn" onclick="document.getElementById('photo-capture').click()">📸 Scatta</button>
+                <button type="button" class="photo-btn" onclick="startCamera()">📸 Scatta</button>
                 <button type="button" class="photo-btn" onclick="document.getElementById('photo-upload').click()">📁 Carica</button>
             </div>
-            <input type="file" id="photo-capture" accept="image/*" capture="environment" class="hidden" onchange="handleFile(this)">
             <input type="file" id="photo-upload" accept="image/*" class="hidden" onchange="handleFile(this)">
             <div id="preview-wrapper" class="preview-container"><img id="img-preview" class="preview-img"><button type="button" class="remove-photo" onclick="clearPhoto()">✕</button></div>
         </div>
@@ -222,7 +236,7 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    let map, marker, lastPhotoData = null;
+    let map, marker, lastPhotoData = null, stream = null;
 
     const categoryData = {
         "pubblici": ["Aree verdi e Parchi", "Piazze e Spazi pedonali", "Sport all'aperto", "Sosta informale"],
@@ -231,48 +245,40 @@
         "transito": ["Nodi di Trasporto", "Aree di Risulta e Parcheggi", "Luoghi Dismessi"]
     };
 
-const locationData = {
-    "Belluno": ["Antole", "Bolzano Bellunese", "Castion", "Cavessago", "Cet", "Chiesurazza", "Faverga", "Fiammoi", "Giamosa", "Giazzoi", "Levego", "Madeago", "Mier", "Nevegal", "Orzes", "Pedeserva", "Pra de Lante", "Rivamaor", "Sagrogna", "Sala", "Salce", "San Pietro in Campo", "Sopracroda", "Sois", "Sossai", "Tisoi", "Vezzano", "Vignole", "Visome"],
-    "Feltre": ["Anzù", "Arson", "Canal di Limana", "Cart", "Fastro", "Foen", "Lasen", "Mugnai", "Nemeggio", "Pont", "Pren", "Tomo", "Umin", "Vellai", "Vignui", "Villabruna", "Villapaiera", "Zermen"],
-    "Borgo Valbelluna": ["Mel", "Trichiana", "Lentiai", "Carve", "Cesana", "Col di Mel", "Confos", "Farra", "Marcador", "Morgan", "Nave", "Pellegai", "Ronchena", "Sant'Antonio Tortal", "Stabie", "Villa di Villa"],
-    "Sedico": ["Bribano", "Libano", "Roe Alte", "Roe Basse", "Mas", "Peron", "Seghe di Villa", "Gresane"],
-    "Alpago": ["Bastia", "Cornei", "Farra", "Garna", "Pieve", "Puos", "Sitran", "Tignes", "Torres", "Villa"],
-    "Ponte nelle Alpi": ["Cadola", "Canevoi", "Casan", "Col di Cugnan", "Cornolade", "Cugnan", "Lastreghe", "Paiane", "Polpet", "Quantin", "Revelin", "Roncan", "Soccher"],
-    "Cortina d'Ampezzo": ["Acquabona", "Alverà", "Campo di Sopra", "Chiave", "Col", "Grava", "Mortisa", "Pecol", "Socol", "Verocai", "Zuel"],
-    "Agordo": ["Bries", "Brugnach", "Parech", "Prompicai", "Rif", "Toccol", "Valcozzena"],
-    "Longarone": ["Castellavazzo", "Codissago", "Fortogna", "Igne", "Pirago", "Rivalta", "Roggia"],
-    "Santa Giustina": ["Cergnai", "Formegan", "Meano", "Ignan", "Sartena"],
-    "Limana": ["Canè", "Cesa", "Coi di Navasa", "Dussoi", "Polentes", "Valmorel", "Triches"],
-    "Pieve di Cadore": ["Nebbiù", "Pozzale", "Sottocastello", "Tai di Cadore"],
-    "Auronzo di Cadore": ["Misurina", "Reane", "San Marco", "Villapiccola", "Villagrande"],
-    "Val di Zoldo": ["Forno", "Dont", "Fusine", "Mareson", "Pecol", "Pieve", "Coi"],
-    "Cesiomaggiore": ["Alivie", "Busche", "Cesiola", "Col San Vito", "Cullagne", "Dorgnan", "Marsiai", "Menin", "Molinello", "Montagne", "Morzanch", "Nezze", "Pez", "Pullir", "Soranzen", "Toschian"],
-    "Pedavena": ["Facen", "Murle", "Norcen", "Teven", "Travagola"],
-    "Arsiè": ["Fastro", "Incino", "Mellame", "Rocca", "Rivai", "San Vito"],
-    "Sospirolo": ["Gron", "Maras", "Mis", "Oregne", "Pascoli", "San Gottardo"],
-    "Sovramonte": ["Aune", "Faller", "Molinello", "Moline", "Servo", "Sorriva", "Zorzoi"],
-    "Quero Vas": ["Caorera", "Carpen", "Quero", "Santa Maria", "Schievenin", "Vas"]
-};
+    const locationData = {
+        "Belluno": ["Antole", "Castion", "Cavessago", "Nevegal", "Salce", "Tisoi"],
+        "Feltre": ["Anzù", "Foen", "Mugnai", "Villabruna"],
+        "Borgo Valbelluna": ["Mel", "Trichiana", "Lentiai"],
+        "Sedico": ["Bribano", "Mas", "Roe Alte"]
+    };
 
-
-    function addSocialField() {
-        const container = document.getElementById('social-container');
-        const count = container.querySelectorAll('.social-row').length;
-        if (count < 5) {
-            const div = document.createElement('div');
-            div.className = 'social-row';
-            div.innerHTML = '<input type="url" class="social-link" placeholder="https://...">';
-            container.appendChild(div);
-            if (count + 1 === 5) document.getElementById('add-social').style.display = 'none';
+    async function startCamera() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            const video = document.getElementById('camera-stream');
+            video.srcObject = stream;
+            document.getElementById('camera-modal').style.display = 'flex';
+        } catch (err) {
+            alert("Impossibile accedere alla fotocamera. Carica un file.");
+            document.getElementById('photo-upload').click();
         }
     }
 
-    function applyRequiredRules() {
-        document.querySelectorAll('.form-group').forEach(group => {
-            const label = group.querySelector('label');
-            const input = group.querySelector('input, select, textarea');
-            if (label && input && label.innerText.includes('*')) input.required = true;
-        });
+    function stopCamera() {
+        if (stream) stream.getTracks().forEach(track => track.stop());
+        document.getElementById('camera-modal').style.display = 'none';
+    }
+
+    function captureSnapshot() {
+        const video = document.getElementById('camera-stream');
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        lastPhotoData = canvas.toDataURL('image/jpeg');
+        document.getElementById('img-preview').src = lastPhotoData;
+        document.getElementById('preview-wrapper').style.display = 'block';
+        stopCamera();
     }
 
     function handleFile(input) {
@@ -289,6 +295,18 @@ const locationData = {
 
     function clearPhoto() { lastPhotoData = null; document.getElementById('preview-wrapper').style.display = 'none'; }
 
+    function addSocialField() {
+        const container = document.getElementById('social-container');
+        const count = container.querySelectorAll('.social-row').length;
+        if (count < 5) {
+            const div = document.createElement('div');
+            div.className = 'social-row';
+            div.innerHTML = '<input type="url" class="social-link" placeholder="https://...">';
+            container.appendChild(div);
+            if (count + 1 === 5) document.getElementById('add-social').style.display = 'none';
+        }
+    }
+
     function populateSubLocs() {
         const subSel = document.getElementById('sub-loc');
         const city = document.getElementById('main-loc').value;
@@ -302,7 +320,7 @@ const locationData = {
 
     const mainSel = document.getElementById('main-loc');
     mainSel.innerHTML = '<option value="" disabled selected>Comune...</option>';
-    Object.keys(locationData).forEach(loc => mainSel.innerHTML += `<option value="${loc}">${loc}</option>`);
+    Object.keys(locationData).sort().forEach(loc => mainSel.innerHTML += `<option value="${loc}">${loc}</option>`);
 
     function updateSubTypes() {
         const macro = document.getElementById('macro-type').value;
@@ -359,23 +377,19 @@ const locationData = {
             const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
             const data = await resp.json();
             const latlng = data.length > 0 ? [data[0].lat, data[0].lon] : [46.14, 12.21];
-            
             map.setView(latlng, 16);
             if (marker) marker.remove();
-            
             marker = L.marker(latlng, {draggable: true}).addTo(map);
             let content = `<b>${spaceName}</b>`;
             if (lastPhotoData) content += `<br><img src="${lastPhotoData}" class="popup-img">`;
             marker.bindPopup(content).openPopup();
         } catch (e) {}
-        
         setTimeout(() => map.invalidateSize(), 200);
     }
 
     function resetUser() { localStorage.removeItem('user_data'); location.reload(); }
 
     window.onload = () => {
-        applyRequiredRules();
         const saved = localStorage.getItem('user_data');
         if (saved) showForm(JSON.parse(saved).nome);
     };
