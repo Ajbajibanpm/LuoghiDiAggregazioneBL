@@ -1,137 +1,245 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mappatura Giovani Belluno</title>
+    <title>Belluno Young Hub Mapping</title>
     <style>
         :root {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --accent: #38bdf8;
-            --text: #f1f5f9;
-            --muted: #94a3b8;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent: #0ea5e9;
+            --border: #cbd5e1;
         }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
         }
-        .container { max-width: 500px; width: 100%; }
-        .card { background: var(--card); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .section-title { color: var(--accent); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
-        input, select { width: 100%; padding: 0.75rem; border-radius: 6px; border: 1px solid #334155; background: var(--bg); color: white; box-sizing: border-box; }
-        .radio-group { display: grid; gap: 0.5rem; }
-        .radio-option { background: #334155; padding: 0.75rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; }
-        .radio-option input { margin-right: 10px; width: auto; }
-        button { width: 100%; padding: 1rem; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; }
-        .btn-primary { background: var(--accent); color: var(--bg); margin-top: 1rem; }
-        .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--muted); margin-top: 0.5rem; font-size: 0.8rem; }
+
+        .container { max-width: 600px; width: 100%; }
+
+        .header { text-align: center; margin-bottom: 2rem; }
+        .header h1 { font-weight: 800; letter-spacing: -0.025em; color: var(--primary); margin-bottom: 0.5rem; }
+
+        .card { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(10px);
+            padding: 2.5rem; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid white;
+        }
+
+        .section-title { 
+            color: var(--text-main); 
+            font-size: 1.1rem; 
+            font-weight: 700;
+            margin: 2rem 0 1rem 0; 
+            display: flex;
+            align-items: center;
+        }
+        .section-title::before {
+            content: "";
+            width: 4px;
+            height: 20px;
+            background: var(--accent);
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+
+        .form-group { margin-bottom: 1.25rem; }
+        label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600; }
+
+        input, select, textarea { 
+            width: 100%; 
+            padding: 0.8rem 1rem; 
+            border-radius: 12px; 
+            border: 1px solid var(--border); 
+            background: white; 
+            font-size: 1rem;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus { border-color: var(--primary); outline: none; }
+
+        .grid-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+        .chip-option { position: relative; }
+        .chip-option input { position: absolute; opacity: 0; cursor: pointer; }
+        .chip-label { 
+            display: block; 
+            padding: 0.75rem; 
+            background: white; 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            text-align: center; 
+            font-size: 0.85rem; 
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .chip-option input:checked + .chip-label { 
+            background: var(--primary); 
+            color: white; 
+            border-color: var(--primary); 
+        }
+
+        button { 
+            width: 100%; 
+            padding: 1rem; 
+            border-radius: 14px; 
+            border: none; 
+            font-weight: 700; 
+            cursor: pointer; 
+            font-size: 1rem;
+            transition: transform 0.1s, background 0.2s;
+        }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3); }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-secondary { background: transparent; color: var(--text-muted); text-decoration: underline; margin-top: 1.5rem; font-size: 0.8rem; }
+
         .hidden { display: none; }
+        .important-tag { background: #fee2e2; color: #ef4444; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="personal-section" class="card">
-        <div class="section-title">Profilo Utente</div>
-        <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem;">Inserisci i tuoi dati una sola volta per contribuire alla mappatura sociale di Belluno.</p>
-        <div class="form-group"><label>Nome e Cognome</label><input type="text" id="user-name"></div>
-        <div class="form-group"><label>Email</label><input type="email" id="user-email"></div>
-        <div class="form-group"><label>Data di Nascita</label><input type="date" id="user-dob"></div>
-        <button class="btn-primary" onclick="savePersonalData()">Inizia Mappatura</button>
+    <div class="header">
+        <h1>Belluno Link</h1>
+        <p style="color: var(--text-muted)">Co-progetta il futuro sociale del territorio bellunese.</p>
     </div>
 
-    <form id="place-form" class="card hidden">
-        <div id="user-greeting" style="font-size: 0.8rem; color: var(--accent); margin-bottom: 1rem;"></div>
-        
-        <div class="section-title">Localizzazione</div>
-        <div class="form-group"><label>Nome del luogo</label><input type="text" id="place-name" required></div>
-        <div class="form-group"><label>Comune o Frazione (Prov. Belluno)</label><input type="text" id="place-location" required></div>
-        <div class="form-group"><label>Indirizzo / Via</label><input type="text" id="place-address" required></div>
+    <div id="step-1" class="card">
+        <div class="section-title">Chi sei?</div>
+        <div class="form-group"><label>Nome e Cognome</label><input type="text" id="u-name" placeholder="Mario Rossi"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="u-email" placeholder="mario@mail.it"></div>
+        <div class="form-group"><label>Nascita</label><input type="date" id="u-dob"></div>
+        <button class="btn-primary" onclick="initSession()">Inizia</button>
+    </div>
 
-        <div class="section-title">Dettagli</div>
+    <form id="step-2" class="card hidden">
+        <div class="section-title">Anagrafica Luogo</div>
+        <div class="form-group"><label>Nome Spazio</label><input type="text" id="p-name" required></div>
+        <div class="form-group"><label>Comune / Frazione</label><input type="text" id="p-loc" required></div>
+        <div class="form-group"><label>Via / Piazza</label><input type="text" id="p-addr"></div>
+        
+        <div class="section-title">Gestione & Contatti</div>
         <div class="form-group">
-            <label>Tipologia</label>
-            <select id="place-type">
-                <option value="civico">Centro Civico</option>
-                <option value="sport">Sport/Skatepark</option>
-                <option value="cultura">Cultura/Studio</option>
-                <option value="ritrovo">Bar/Ritrovo</option>
+            <label>Chi lo gestisce?</label>
+            <select id="p-mgmt">
+                <option value="assoc">Associazione / ETS</option>
+                <option value="comune">Comune / Ente Pubblico</option>
+                <option value="priv">Impresa Privata</option>
+                <option value="inf">Gruppo Informale / Autogestione</option>
+                <option value="rel">Ente Religioso</option>
             </select>
         </div>
+        <div class="form-group"><label>Contatti (Social, Tel, Web)</label><input type="text" id="p-cont" placeholder="@instagram, link, o numero"></div>
 
+        <div class="section-title">Attività & Target</div>
         <div class="form-group">
-            <label>Accesso</label>
-            <div class="radio-group">
-                <label class="radio-option"><input type="radio" name="access" value="libero"> Libero</label>
-                <label class="radio-option"><input type="radio" name="access" value="tessera"> Con Tessera</label>
+            <label>Categoria prevalente</label>
+            <div class="grid-options">
+                <div class="chip-option"><input type="radio" name="cat" value="cowork" id="c1"><label class="chip-label" for="c1">Coworking</label></div>
+                <div class="chip-option"><input type="radio" name="cat" value="cult" id="c2"><label class="chip-label" for="c2">Cultura/Eventi</label></div>
+                <div class="chip-option"><input type="radio" name="cat" value="sport" id="c3"><label class="chip-label" for="c3">Sport/Wellness</label></div>
+                <div class="chip-option"><input type="radio" name="cat" value="lab" id="c4"><label class="chip-label" for="c4">Corsi/Lab</label></div>
+                <div class="chip-option"><input type="radio" name="cat" value="social" id="c5"><label class="chip-label" for="c5">Aggregazione</label></div>
+                <div class="chip-option"><input type="radio" name="cat" value="study" id="c6"><label class="chip-label" for="c6">Aula Studio</label></div>
             </div>
         </div>
 
         <div class="form-group">
-            <label>Quanto spesso lo frequenti?</label>
-            <select id="freq">
-                <option value="spesso">Spesso</option>
-                <option value="raramente">Raramente</option>
+            <label>Frequentato da...</label>
+            <select id="p-target">
+                <option value="uni">Studenti Universitari</option>
+                <option value="high">Studenti Scuole Superiori</option>
+                <option value="work">Giovani Lavoratori</option>
+                <option value="mix">Target misto</option>
             </select>
         </div>
 
-        <button type="button" class="btn-primary" onclick="submitForm()">Invia Risposta</button>
-        <button type="button" class="btn-secondary" onclick="resetUser()">Cambia Utente</button>
+        <div class="form-group">
+            <label>Modalità di accesso</label>
+            <select id="p-access">
+                <option value="free">Gratuito / Libero</option>
+                <option value="book">Gratuito su prenotazione</option>
+                <option value="membership">Con tessera associativa</option>
+                <option value="pay">A pagamento</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Frequenza d'uso personale</label>
+            <select id="p-freq">
+                <option value="daily">Ogni giorno</option>
+                <option value="weekly">Più volte a settimana</option>
+                <option value="monthly">Occasionalmente</option>
+            </select>
+        </div>
+
+        <div class="section-title">Note & Feedback</div>
+        <div class="form-group">
+            <label>Raccontaci di più (Attività extra, atmosfera...)</label>
+            <textarea id="p-notes" rows="3" placeholder="Es: Offre mostre fotografiche, corsi di grafica..."></textarea>
+        </div>
+
+        <button type="button" class="btn-primary" onclick="submit()">Conferma e Invia</button>
+        <button type="button" class="btn-secondary" onclick="clearSession()">Reset Profilo</button>
     </form>
 
-    <div id="success-screen" class="card hidden" style="text-align:center;">
-        <h2 style="color: var(--accent)">La tua risposta è stata registrata</h2>
-        <button class="btn-primary" onclick="newEntry()">Inserisci un altro luogo</button>
-        <button class="btn-secondary" onclick="window.close()">Esci</button>
+    <div id="step-3" class="card hidden" style="text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
+        <h2 style="margin-top:0">La tua risposta è stata registrata</h2>
+        <p style="color: var(--text-muted)">Grazie per aver contribuito alla mappatura di Belluno.</p>
+        <button class="btn-primary" onclick="refreshForm()">Inserisci un altro luogo</button>
+        <button class="btn-secondary" onclick="window.close()">Chiudi</button>
     </div>
 </div>
 
 <script>
-    const pSec = document.getElementById('personal-section');
-    const pForm = document.getElementById('place-form');
-    const sScr = document.getElementById('success-screen');
+    const s1 = document.getElementById('step-1'), s2 = document.getElementById('step-2'), s3 = document.getElementById('step-3');
 
     window.onload = () => {
-        const saved = localStorage.getItem('user_data');
-        if (saved) showForm(JSON.parse(saved).nome);
+        if(localStorage.getItem('bl_user')) showForm();
     };
 
-    function savePersonalData() {
-        const nome = document.getElementById('user-name').value;
-        const email = document.getElementById('user-email').value;
-        const dob = document.getElementById('user-dob').value;
-        if (!nome || !email || !dob) return alert("Dati mancanti");
-        localStorage.setItem('user_data', JSON.stringify({nome, email, dob}));
-        showForm(nome);
+    function initSession() {
+        const data = { 
+            n: document.getElementById('u-name').value, 
+            e: document.getElementById('u-email').value, 
+            d: document.getElementById('u-dob').value 
+        };
+        if(!data.n || !data.e || !data.d) return alert("Inserisci i dati del profilo");
+        localStorage.setItem('bl_user', JSON.stringify(data));
+        showForm();
     }
 
-    function showForm(name) {
-        pSec.classList.add('hidden');
-        sScr.classList.add('hidden');
-        pForm.classList.remove('hidden');
-        document.getElementById('user-greeting').innerText = "Utente: " + name;
+    function showForm() {
+        s1.classList.add('hidden'); s3.classList.add('hidden'); s2.classList.remove('hidden');
     }
 
-    function submitForm() {
-        pForm.classList.add('hidden');
-        sScr.classList.remove('hidden');
+    function submit() {
+        s2.classList.add('hidden'); s3.classList.remove('hidden');
     }
 
-    function newEntry() {
-        pForm.reset();
-        showForm(JSON.parse(localStorage.getItem('user_data')).nome);
+    function refreshForm() {
+        document.getElementById('step-2').reset();
+        showForm();
     }
 
-    function resetUser() {
-        localStorage.removeItem('user_data');
+    function clearSession() {
+        localStorage.removeItem('bl_user');
         location.reload();
     }
 </script>
