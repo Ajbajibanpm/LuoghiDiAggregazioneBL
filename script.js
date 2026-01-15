@@ -1,26 +1,26 @@
 let map, marker, pickerMap, pickerMarker, tempCoords = null;
 
 const locationData = {
-    "Belluno": ["Antole", "Bolzano Bellunese", "Castion", "Cavessago", "Cet", "Chiesurazza", "Faverga", "Fiammoi", "Giamosa", "Giazzoi", "Levego", "Madeago", "Mier", "Nevegal", "Orzes", "Pedeserva", "Pra de Lante", "Rivamaor", "Sagrogna", "Sala", "Salce", "San Pietro in Campo", "Sopracroda", "Sois", "Sossai", "Tisoi", "Vezzano", "Vignole", "Visome"],
-    "Feltre": ["Anzù", "Arson", "Canal di Limana", "Cart", "Fastro", "Foen", "Lasen", "Mugnai", "Nemeggio", "Pont", "Pren", "Tomo", "Umin", "Vellai", "Vignui", "Villabruna", "Villapaiera", "Zermen"],
-    "Borgo Valbelluna": ["Mel", "Trichiana", "Lentiai", "Carve", "Cesana", "Col di Mel", "Confos", "Farra", "Marcador", "Morgan", "Nave", "Pellegai", "Ronchena", "Sant'Antonio Tortal", "Stabie", "Villa di Villa"],
-    "Sedico": ["Bribano", "Libano", "Roe Alte", "Roe Basse", "Mas", "Peron", "Seghe di Villa", "Gresane"],
-    "Alpago": ["Bastia", "Cornei", "Farra", "Garna", "Pieve", "Puos", "Sitran", "Tignes", "Torres", "Villa"],
-    "Ponte nelle Alpi": ["Cadola", "Canevoi", "Casan", "Col di Cugnan", "Cornolade", "Cugnan", "Lastreghe", "Paiane", "Polpet", "Quantin", "Revelin", "Roncan", "Soccher"],
-    "Cortina d'Ampezzo": ["Acquabona", "Alverà", "Campo di Sopra", "Chiave", "Col", "Grava", "Mortisa", "Pecol", "Socol", "Verocai", "Zuel"],
-    "Agordo": ["Bries", "Brugnach", "Parech", "Prompicai", "Rif", "Toccol", "Valcozzena"],
-    "Longarone": ["Castellavazzo", "Codissago", "Fortogna", "Igne", "Pirago", "Rivalta", "Roggia"],
-    "Santa Giustina": ["Cergnai", "Formegan", "Meano", "Ignan", "Sartena"],
-    "Limana": ["Canè", "Cesa", "Coi di Navasa", "Dussoi", "Polentes", "Valmorel", "Triches"],
-    "Pieve di Cadore": ["Nebbiù", "Pozzale", "Sottocastello", "Tai di Cadore"],
-    "Auronzo di Cadore": ["Misurina", "Reane", "San Marco", "Villapiccola", "Villagrande"],
-    "Val di Zoldo": ["Forno", "Dont", "Fusine", "Mareson", "Pecol", "Pieve", "Coi"],
-    "Cesiomaggiore": ["Alivie", "Busche", "Cesiola", "Col San Vito", "Cullagne", "Dorgnan", "Marsiai", "Menin", "Molinello", "Montagne", "Morzanch", "Nezze", "Pez", "Pullir", "Soranzen", "Toschian"],
-    "Pedavena": ["Facen", "Murle", "Norcen", "Teven", "Travagola"],
-    "Arsiè": ["Fastro", "Incino", "Mellame", "Rocca", "Rivai", "San Vito"],
-    "Sospirolo": ["Gron", "Maras", "Mis", "Oregne", "Pascoli", "San Gottardo"],
-    "Sovramonte": ["Aune", "Faller", "Molinello", "Moline", "Servo", "Sorriva", "Zorzoi"],
-    "Quero Vas": ["Caorera", "Carpen", "Quero", "Santa Maria", "Schievenin", "Vas"]
+    "Agordo": ["Bries", "Brugnach", "Parech", "Prompicai", "Rif", "Toccol", "Valcozzena"],
+    "Alpago": ["Bastia", "Cornei", "Farra", "Garna", "Pieve", "Puos", "Sitran", "Tignes", "Torres", "Villa"],
+    "Arsiè": ["Fastro", "Incino", "Mellame", "Rocca", "Rivai", "San Vito"],
+    "Auronzo di Cadore": ["Misurina", "Reane", "San Marco", "Villapiccola", "Villagrande"],
+    "Belluno": ["Antole", "Bolzano Bellunese", "Castion", "Cavessago", "Cet", "Chiesurazza", "Faverga", "Fiammoi", "Giamosa", "Giazzoi", "Levego", "Madeago", "Mier", "Nevegal", "Orzes", "Pedeserva", "Pra de Lante", "Rivamaor", "Sagrogna", "Sala", "Salce", "San Pietro in Campo", "Sopracroda", "Sois", "Sossai", "Tisoi", "Vezzano", "Vignole", "Visome"],
+    "Borgo Valbelluna": ["Mel", "Trichiana", "Lentiai", "Carve", "Cesana", "Col di Mel", "Confos", "Farra", "Marcador", "Morgan", "Nave", "Pellegai", "Ronchena", "Sant'Antonio Tortal", "Stabie", "Villa di Villa"],
+    "Cesiomaggiore": ["Alivie", "Busche", "Cesiola", "Col San Vito", "Cullagne", "Dorgnan", "Marsiai", "Menin", "Molinello", "Montagne", "Morzanch", "Nezze", "Pez", "Pullir", "Soranzen", "Toschian"],
+    "Cortina d'Ampezzo": ["Acquabona", "Alverà", "Campo di Sopra", "Chiave", "Col", "Grava", "Mortisa", "Pecol", "Socol", "Verocai", "Zuel"],
+    "Feltre": ["Anzù", "Arson", "Canal di Limana", "Cart", "Fastro", "Foen", "Lasen", "Mugnai", "Nemeggio", "Pont", "Pren", "Tomo", "Umin", "Vellai", "Vignui", "Villabruna", "Villapaiera", "Zermen"],
+    "Limana": ["Canè", "Cesa", "Coi di Navasa", "Dussoi", "Polentes", "Valmorel", "Triches"],
+    "Longarone": ["Castellavazzo", "Codissago", "Fortogna", "Igne", "Pirago", "Rivalta", "Roggia"],
+    "Pedavena": ["Facen", "Murle", "Norcen", "Teven", "Travagola"],
+    "Pieve di Cadore": ["Nebbiù", "Pozzale", "Sottocastello", "Tai di Cadore"],
+    "Ponte nelle Alpi": ["Cadola", "Canevoi", "Casan", "Col di Cugnan", "Cornolade", "Cugnan", "Lastreghe", "Paiane", "Polpet", "Quantin", "Revelin", "Roncan", "Soccher"],
+    "Quero Vas": ["Caorera", "Carpen", "Quero", "Santa Maria", "Schievenin", "Vas"],
+    "Santa Giustina": ["Cergnai", "Formegan", "Meano", "Ignan", "Sartena"],
+    "Sedico": ["Bribano", "Libano", "Roe Alte", "Roe Basse", "Mas", "Peron", "Seghe di Villa", "Gresane"],
+    "Sospirolo": ["Gron", "Maras", "Mis", "Oregne", "Pascoli", "San Gottardo"],
+    "Sovramonte": ["Aune", "Faller", "Molinello", "Moline", "Servo", "Sorriva", "Zorzoi"],
+    "Val di Zoldo": ["Forno", "Dont", "Fusine", "Mareson", "Pecol", "Pieve", "Coi"]
 };
 
 const categoryData = {
@@ -70,6 +70,54 @@ function updateSubTypes() {
 function toggleOther(select, inputId) {
     const target = document.getElementById(inputId);
     if(target) target.style.display = (select.value === "altro") ? "block" : "none";
+}
+
+function toggleManagementName() {
+    const val = document.getElementById('management').value;
+    const nameInput = document.getElementById('management-name');
+    const otherMgmtInput = document.getElementById('other-mgmt');
+
+    // Mostra il nome del gestore per tutti tranne "non_so"
+    if (val && val !== 'non_so') {
+        nameInput.style.display = 'block';
+    } else {
+        nameInput.style.display = 'none';
+    }
+
+    // Mostra l'input specifico se viene selezionato "altro"
+    if (val === 'altro') {
+        otherMgmtInput.style.display = 'block';
+    } else {
+        otherMgmtInput.style.display = 'none';
+    }
+}
+
+function addSocialField() {
+    const container = document.getElementById('social-container');
+    const rows = container.getElementsByClassName('social-row');
+
+    if (rows.length < 5) {
+        const newRow = document.createElement('div');
+        newRow.className = 'social-row';
+        newRow.style.marginTop = '8px';
+        
+        const newInput = document.createElement('input');
+        newInput.type = 'url';
+        newInput.className = 'social-link';
+        newInput.placeholder = 'https://...';
+        
+        newInput.addEventListener('input', function() {
+            this.value = this.value.replace(/\s+/g, '');
+        });
+
+        newRow.appendChild(newInput);
+        container.appendChild(newRow);
+    }
+
+    if (rows.length === 5) {
+        const btn = document.getElementById('add-social');
+        if (btn) btn.style.display = 'none';
+    }
 }
 
 async function openMapPicker() {
@@ -137,6 +185,13 @@ window.onload = () => {
         sel.innerHTML = '<option value="" disabled selected>Scegli Comune...</option>';
         Object.keys(locationData).sort().forEach(l => sel.innerHTML += `<option value="${l}">${l}</option>`);
     }
+    
+    document.querySelectorAll('.social-link').forEach(input => {
+        input.addEventListener('input', function() {
+            this.value = this.value.replace(/\s+/g, '');
+        });
+    });
+
     const s = localStorage.getItem('user_data');
     if (s) showForm(JSON.parse(s).nome);
 };
