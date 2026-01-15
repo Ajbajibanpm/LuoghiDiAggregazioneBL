@@ -30,6 +30,7 @@
         .radio-group { display: grid; gap: 0.5rem; }
         .radio-option { background: #334155; padding: 0.75rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; }
         .radio-option input { margin-right: 10px; width: auto; }
+        .other-input { margin-top: 0.5rem; display: none; }
         button { width: 100%; padding: 1rem; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; }
         .btn-primary { background: var(--accent); color: var(--bg); margin-top: 1rem; }
         .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--muted); margin-top: 0.5rem; font-size: 0.8rem; }
@@ -42,7 +43,7 @@
 <div class="container">
     <div id="personal-section" class="card">
         <div class="section-title">Profilo Utente</div>
-        <p class="context-info">Stai partecipando a una mappatura sociale fondamentale per la provincia di Belluno. I tuoi dati serviranno a dare voce ai bisogni dei giovani del territorio.</p>
+        <p class="context-info">Il tuo contributo è essenziale per mappare gli spazi di aggregazione nella provincia di Belluno. Aiutaci a costruire un database per le politiche giovanili del territorio.</p>
         <div class="form-group"><label>Nome e Cognome</label><input type="text" id="user-name"></div>
         <div class="form-group"><label>Email</label><input type="email" id="user-email"></div>
         <div class="form-group"><label>Data di Nascita</label><input type="date" id="user-dob"></div>
@@ -55,76 +56,63 @@
         <div class="section-title">Localizzazione</div>
         <div class="form-group">
             <label>Frazione Principale (Comune)</label>
-            <select id="main-loc" onchange="populateSubLocs()" required>
-                <option value="">Seleziona...</option>
-            </select>
+            <select id="main-loc" onchange="populateSubLocs()" required></select>
         </div>
         <div class="form-group">
             <label>Località Minore</label>
-            <select id="sub-loc" required disabled>
-                <option value="">Scegli prima la frazione...</option>
-            </select>
+            <select id="sub-loc" onchange="toggleOther(this, 'other-loc')" required disabled></select>
+            <input type="text" id="other-loc" class="other-input" placeholder="Specifica località...">
         </div>
         <div class="form-group"><label>Nome del luogo</label><input type="text" id="place-name" required></div>
 
         <div class="section-title">Dettagli del Posto</div>
         <div class="form-group">
             <label>Tipologia</label>
-            <select id="place-type">
+            <select id="place-type" onchange="toggleOther(this, 'other-type')">
                 <option value="civico">Centro Civico / Sociale</option>
                 <option value="sport">Sport / Skatepark</option>
                 <option value="cultura">Cultura / Studio</option>
                 <option value="ritrovo">Bar / Ritrovo Informale</option>
                 <option value="aperto">Parco / Piazza</option>
+                <option value="altro">Altro...</option>
             </select>
+            <input type="text" id="other-type" class="other-input" placeholder="Specifica tipologia...">
         </div>
 
         <div class="form-group">
             <label>Gestione</label>
-            <select id="mgmt">
+            <select id="mgmt" onchange="toggleOther(this, 'other-mgmt')">
                 <option value="comune">Comune / Ente Pubblico</option>
                 <option value="associazione">Associazione / Parrocchia</option>
                 <option value="privato">Privato</option>
                 <option value="autorganizzato">Gruppo autorganizzato</option>
+                <option value="altro">Altro...</option>
             </select>
+            <input type="text" id="other-mgmt" class="other-input" placeholder="Specifica gestione...">
         </div>
 
         <div class="form-group">
             <label>Accesso</label>
             <div class="radio-group">
-                <label class="radio-option"><input type="radio" name="access" value="libero" checked> Libero/Gratuito</label>
-                <label class="radio-option"><input type="radio" name="access" value="tessera"> Tessera/Iscrizione</label>
-                <label class="radio-option"><input type="radio" name="access" value="consumazione"> Solo consumazione</label>
+                <label class="radio-option"><input type="radio" name="access" value="libero" checked onclick="hideOther('other-access')"> Libero/Gratuito</label>
+                <label class="radio-option"><input type="radio" name="access" value="tessera" onclick="hideOther('other-access')"> Tessera/Iscrizione</label>
+                <label class="radio-option"><input type="radio" name="access" value="consumazione" onclick="hideOther('other-access')"> Solo consumazione</label>
+                <label class="radio-option"><input type="radio" name="access" value="altro" onclick="showOther('other-access')"> Altro...</label>
             </div>
+            <input type="text" id="other-access" class="other-input" placeholder="Specifica modalità accesso...">
         </div>
 
         <div class="section-title">La tua esperienza</div>
         <div class="form-group">
-            <label>Frequenza d'uso</label>
-            <select id="freq">
-                <option value="quotidiano">Ogni giorno</option>
-                <option value="settimanale">Qualche volta a settimana</option>
-                <option value="occasionale">Raramente</option>
-            </select>
-        </div>
-
-        <div class="form-group">
             <label>Tuo ruolo nel territorio</label>
-            <select id="user-role">
+            <select id="user-role" onchange="toggleOther(this, 'other-role')">
                 <option value="studente">Studente</option>
                 <option value="lavoratore">Lavoratore</option>
                 <option value="volontario">Attivista / Volontario</option>
                 <option value="residente">Residente</option>
+                <option value="altro">Altro...</option>
             </select>
-        </div>
-
-        <div class="form-group">
-            <label>Livello di affollamento (target giovani)</label>
-            <div class="radio-group">
-                <label class="radio-option"><input type="radio" name="crowd" value="alto"> Molto frequentato</label>
-                <label class="radio-option"><input type="radio" name="crowd" value="medio"> Mediamente frequentato</label>
-                <label class="radio-option"><input type="radio" name="crowd" value="basso"> Poco frequentato</label>
-            </div>
+            <input type="text" id="other-role" class="other-input" placeholder="Specifica ruolo...">
         </div>
 
         <button type="button" class="btn-primary" onclick="submitForm()">Invia Risposta</button>
@@ -133,7 +121,7 @@
 
     <div id="success-screen" class="card hidden" style="text-align:center;">
         <h2 style="color: var(--accent)">La tua risposta è stata registrata</h2>
-        <p>Grazie per il tuo contributo alla mappatura di Belluno.</p>
+        <p>Grazie per il tuo contributo alla causa sociale di Belluno.</p>
         <button class="btn-primary" onclick="newEntry()">Inserisci un altro luogo</button>
         <button class="btn-secondary" onclick="window.close()">Esci</button>
     </div>
@@ -170,7 +158,7 @@
     const mainSel = document.getElementById('main-loc');
     const subSel = document.getElementById('sub-loc');
 
-    // Inizializza comuni
+    mainSel.innerHTML = '<option value="">Seleziona Comune...</option>';
     Object.keys(locationData).forEach(loc => {
         let opt = document.createElement('option');
         opt.value = loc;
@@ -188,18 +176,30 @@
                 opt.textContent = s;
                 subSel.appendChild(opt);
             });
+            let otherOpt = document.createElement('option');
+            otherOpt.value = "altro";
+            otherOpt.textContent = "Altro...";
+            subSel.appendChild(otherOpt);
             subSel.disabled = false;
         } else {
             subSel.disabled = true;
         }
     }
 
+    function toggleOther(select, inputId) {
+        const input = document.getElementById(inputId);
+        input.style.display = (select.value === "altro") ? "block" : "none";
+    }
+
+    function showOther(id) { document.getElementById(id).style.display = 'block'; }
+    function hideOther(id) { document.getElementById(id).style.display = 'none'; }
+
     function savePersonalData() {
         const nome = document.getElementById('user-name').value;
         const email = document.getElementById('user-email').value;
         const dob = document.getElementById('user-dob').value;
         if (!nome || !email || !dob) return alert("Compila i dati personali");
-        localStorage.setItem('user_data', JSON.stringify({nome, email, dob}));
+        localStorage.setItem('user_data', JSON.stringify({nome}));
         showForm(nome);
     }
 
@@ -217,6 +217,7 @@
 
     function newEntry() {
         document.getElementById('place-form').reset();
+        document.querySelectorAll('.other-input').forEach(i => i.style.display = 'none');
         subSel.disabled = true;
         showForm(JSON.parse(localStorage.getItem('user_data')).nome);
     }
