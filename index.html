@@ -43,8 +43,7 @@
         <div class="form-group">
             <label>Foto dello spazio</label>
             <div class="photo-options">
-                <button type="button" class="photo-btn" onclick="startCamera()">📸 Scatta</button>
-                <button type="button" class="photo-btn" onclick="document.getElementById('photo-upload').click()">📁 Carica</button>
+                <button type="button" class="photo-btn" onclick="document.getElementById('photo-upload').click()">📸 Carica</button>
             </div>
             <input type="file" id="photo-upload" accept="image/*" class="hidden" onchange="handleFile(this)">
             <div id="preview-wrapper" class="preview-container"><img id="img-preview" class="preview-img"><button type="button" class="remove-photo" onclick="clearPhoto()">✕</button></div>
@@ -120,7 +119,15 @@
             <button type="button" id="add-social" class="btn-add" onclick="addSocialField()">+ Aggiungi link</button>
         </div>
 
-
+        <!--SEZIONE X: ???-->
+        <div class="section-title">Media e Descrizione</div>
+        <div class="form-group">
+            <label>Domanda X</label>
+            <div class="form-group">
+            <label>Domanda X *</label>
+            <select id="domanda-x" onchange="eventualeFunzione()"></select>
+        </div>
+        </div>
 
         <!--INVIO FORM-->
         <button type="button" class="btn-primary" onclick="submitForm()">Registra Luogo</button>
