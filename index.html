@@ -3,188 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mappatura Giovani Belluno</title>
+    <title>Belluno Link • Mappatura Sociale</title>
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --muted: #94a3b8; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { max-width: 500px; width: 100%; }
-        .card { background: var(--card); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .section-title { color: var(--accent); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; margin: 1.5rem 0 1rem; border-bottom: 1px solid #334155; padding-bottom: 0.3rem; }
-        .form-group { margin-bottom: 1.2rem; }
-        label { display: block; margin-bottom: 0.4rem; font-size: 0.9rem; }
-        input, select { width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #334155; background: var(--bg); color: white; }
-        .radio-group { display: grid; gap: 0.5rem; }
-        .radio-option { background: #334155; padding: 0.7rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; font-size: 0.9rem; }
-        .radio-option input { margin-right: 10px; width: auto; }
-        button { width: 100%; padding: 1rem; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; margin-top: 1rem; }
-        .btn-primary { background: var(--accent); color: var(--bg); }
-        .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--muted); font-size: 0.8rem; }
+        :root {
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --primary: #4f46e5;
+            --accent: #06b6d4;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container { max-width: 650px; width: 100%; }
+
+        .header { text-align: center; margin-bottom: 2.5rem; color: white; }
+        .header h1 { font-size: 2.5rem; font-weight: 800; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .header p { font-size: 1.1rem; opacity: 0.9; }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 3rem; 
+            border-radius: 30px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .section-title { 
+            color: var(--primary); 
+            font-size: 1.2rem; 
+            font-weight: 800;
+            margin: 2.5rem 0 1.2rem 0; 
+            display: flex;
+            align-items: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.6rem; font-weight: 700; font-size: 0.95rem; }
+
+        input, select, textarea { 
+            width: 100%; 
+            padding: 1rem; 
+            border-radius: 15px; 
+            border: 2px solid var(--border); 
+            background: #f8fafc; 
+            font-size: 1rem;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; background: white; }
+
+        .grid-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+        .chip-option { position: relative; }
+        .chip-option input { position: absolute; opacity: 0; }
+        .chip-label { 
+            display: block; 
+            padding: 1rem; 
+            background: #f1f5f9; 
+            border: 2px solid transparent; 
+            border-radius: 15px; 
+            text-align: center; 
+            font-size: 0.9rem; 
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .chip-option input:checked + .chip-label { 
+            background: var(--primary); 
+            color: white; 
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+        }
+
+        button { 
+            width: 100%; 
+            padding: 1.2rem; 
+            border-radius: 18px; 
+            border: none; 
+            font-weight: 800; 
+            cursor: pointer; 
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: var(--primary); color: white; margin-top: 1rem; }
+        .btn-primary:hover { filter: brightness(1.2); transform: translateY(-2px); }
+        .btn-secondary { background: transparent; color: var(--text-muted); margin-top: 1.5rem; font-size: 0.9rem; font-weight: 500; }
+
         .hidden { display: none; }
-        .context-box { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.4; }
+        .management-details { background: #eef2ff; padding: 1.5rem; border-radius: 15px; margin-top: 10px; border-left: 5px solid var(--primary); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="personal-section" class="card">
-        <h2>Unisciti alla Mappa</h2>
-        <div class="context-box">Il tuo contributo è fondamentale per mappare gli spazi di aggregazione giovanile nella Provincia di Belluno. Aiutaci a rendere il territorio più vivo e connesso.</div>
-        <div class="section-title">I tuoi dati</div>
-        <div class="form-group"><label>Nome e Cognome</label><input type="text" id="user-name"></div>
-        <div class="form-group"><label>Email</label><input type="email" id="user-email"></div>
-        <div class="form-group"><label>Data di Nascita</label><input type="date" id="user-dob"></div>
-        <button class="btn-primary" onclick="savePersonalData()">Configura Profilo</button>
+    <div class="header">
+        <h1>Belluno Link</h1>
+        <p>Mappa i luoghi, connetti la provincia.</p>
     </div>
 
-    <form id="place-form" class="card hidden">
-        <div id="user-greeting" style="font-size: 0.8rem; color: var(--accent); margin-bottom: 1rem;"></div>
+    <div id="step-1" class="card">
+        <div class="section-title">Profilo Utente</div>
+        <p style="margin-bottom: 2rem; color: var(--text-muted)">I tuoi dati verranno salvati localmente per i prossimi inserimenti.</p>
+        <div class="form-group"><label>Nome e Cognome</label><input type="text" id="u-name" placeholder="Mario Rossi"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="u-email" placeholder="mario@esempio.it"></div>
+        <div class="form-group"><label>Data di Nascita</label><input type="date" id="u-dob"></div>
+        <button class="btn-primary" onclick="initSession()">Comincia</button>
+    </div>
+
+    <form id="step-2" class="card hidden">
+        <div id="user-display" style="font-weight: 800; color: var(--accent); margin-bottom: 1rem; font-size: 0.8rem;"></div>
         
-        <div class="section-title">Dove si trova?</div>
+        <div class="section-title">Identità del Luogo</div>
+        <div class="form-group"><label>Nome del Luogo / Spazio</label><input type="text" id="p-name" placeholder="Es. Centro Giovani, Skatepark..." required></div>
+        
+        <div class="section-title">Ubicazione</div>
+        <div class="form-group"><label>Comune o Frazione</label><input type="text" id="p-loc" placeholder="Belluno, Feltre, Sedico..." required></div>
+        <div class="form-group"><label>Indirizzo specifico</label><input type="text" id="p-addr" placeholder="Via/Piazza e n. civico"></div>
+        
+        <div class="section-title">Gestione e Contatti</div>
         <div class="form-group">
-            <label>Comune / Frazione Principale</label>
-            <select id="main-loc" onchange="updateSubLocs()" required>
-                <option value="">Seleziona Comune...</option>
+            <label>Tipologia Gestore</label>
+            <select id="p-mgmt-type" onchange="toggleMgmtName()">
+                <option value="inf">Gruppo Informale / Autogestione</option>
+                <option value="assoc">Associazione / ETS</option>
+                <option value="comune">Ente Pubblico / Comune</option>
+                <option value="priv">Privato / Azienda</option>
+                <option value="rel">Ente Religioso / Parrocchia</option>
             </select>
         </div>
-        <div class="form-group">
-            <label>Località / Frazione Minore</label>
-            <select id="sub-loc" required disabled>
-                <option value="">Seleziona prima il comune...</option>
-            </select>
+        
+        <div id="mgmt-name-box" class="form-group management-details hidden">
+            <label>Nome dell'Associazione o Ente</label>
+            <input type="text" id="p-mgmt-name" placeholder="Inserisci il nome specifico">
         </div>
-        <div class="form-group"><label>Nome del Luogo (es. "Bar Centrale", "Skatepark")</label><input type="text" id="place-name" required></div>
+
+        <div class="form-group"><label>Contatti (IG, Web, Mail)</label><input type="text" id="p-cont" placeholder="@account o link utile"></div>
 
         <div class="section-title">Caratteristiche</div>
         <div class="form-group">
-            <label>Chi lo gestisce?</label>
-            <select id="mgmt">
-                <option value="pubblico">Pubblico (Comune)</option>
-                <option value="privato">Privato (Esercente)</option>
-                <option value="associazione">Associazione/Parrocchia</option>
-                <option value="spontaneo">Nessuno (Spontaneo)</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Accessibilità</label>
-            <div class="radio-group">
-                <label class="radio-option"><input type="radio" name="access" value="libero" checked> Libero/Gratuito</label>
-                <label class="radio-option"><input type="radio" name="access" value="consumazione"> Solo con consumazione</label>
-                <label class="radio-option"><input type="radio" name="access" value="tessera"> Solo soci/tessera</label>
+            <label>Cosa si fa qui?</label>
+            <div class="grid-options">
+                <div class="chip-option"><input type="radio" name="cat" value="cowork" id="c1"><label class="chip-label" for="c1">Coworking</label></div>
+                <div class="chip-option"><input type="radio" name="cat" value="cult" id="c2"><label class="chip-label" for="c2">Cultura</label></div>
+                <div class="chip-option"><input type="radio" name="cat" value="sport" id="c3"><label class="chip-label" for="c3">Sport</label></div>
+                <div class="chip-option"><input type="radio" name="cat" value="study" id="c4"><label class="chip-label" for="c4">Studio</label></div>
+                <div class="chip-option"><input type="radio" name="cat" value="lab" id="c5"><label class="chip-label" for="c5">Workshop</label></div>
+                <div class="chip-option"><input type="radio" name="cat" value="social" id="c6"><label class="chip-label" for="c6">Ritrovo</label></div>
             </div>
         </div>
 
         <div class="form-group">
-            <label>Quanto spesso ci vai?</label>
-            <select id="freq">
-                <option value="giornaliero">Ogni giorno</option>
-                <option value="settimanale">Settimanalmente</option>
-                <option value="occasionale">Raramente</option>
+            <label>Chi lo frequenta principalmente?</label>
+            <select id="p-target">
+                <option value="high">Studenti Superiori</option>
+                <option value="uni">Studenti Universitari</option>
+                <option value="work">Young Professionals</option>
+                <option value="all">Mix di età</option>
             </select>
         </div>
 
-        <button type="button" class="btn-primary" onclick="submitForm()">Conferma e Invia</button>
-        <button type="button" class="btn-secondary" onclick="resetUser()">Reset Profilo</button>
+        <div class="form-group">
+            <label>Modalità di accesso</label>
+            <select id="p-access">
+                <option value="free">Libero e Gratuito</option>
+                <option value="book">Gratuito su Prenotazione</option>
+                <option value="member">Solo per tesserati</option>
+                <option value="pay">Ingresso a Pagamento</option>
+            </select>
+        </div>
+
+        <div class="section-title">Esperienza Personale</div>
+        <div class="form-group">
+            <label>Ogni quanto ci vai?</label>
+            <select id="p-freq">
+                <option value="daily">Praticamente ogni giorno</option>
+                <option value="weekly">Qualche volta a settimana</option>
+                <option value="monthly">Una o due volte al mese</option>
+                <option value="rare">Raramente</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Note aggiuntive (atmosfera, servizi, perché ci vai?)</label>
+            <textarea id="p-notes" rows="4" placeholder="Scrivi qui i dettagli che fanno la differenza..."></textarea>
+        </div>
+
+        <button type="button" class="btn-primary" onclick="submitData()">Conferma Mappatura</button>
+        <button type="button" class="btn-secondary" onclick="resetProfile()">Reset Profilo Utente</button>
     </form>
 
-    <div id="success-screen" class="card hidden" style="text-align:center;">
-        <h2 style="color: var(--accent)">La tua risposta è stata registrata</h2>
-        <p style="font-size: 0.9rem;">Grazie per aver contribuito alla causa sociale di Belluno.</p>
-        <button class="btn-primary" onclick="newEntry()">Inserisci un altro luogo</button>
-        <button class="btn-secondary" onclick="location.reload()">Chiudi</button>
+    <div id="step-3" class="card hidden" style="text-align: center;">
+        <div style="font-size: 4rem; margin-bottom: 1.5rem;">📍</div>
+        <h2 style="font-size: 1.8rem; color: var(--primary);">La tua risposta è stata registrata</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">Il tuo contributo è essenziale per mappare i nuovi spazi di aggregazione a Belluno.</p>
+        <button class="btn-primary" onclick="newEntry()">Mappa un altro luogo</button>
+        <button class="btn-secondary" onclick="window.close()">Esci dall'app</button>
     </div>
 </div>
 
 <script>
-    const data = {
-        "Belluno": ["Antole", "Bolzano Bellunese", "Caviola", "Castion", "Cavessago", "Cet", "Chiesurazza", "Faverga", "Fiammoi", "Giamosa", "Giazzoi", "Levego", "Madeago", "Miér", "Nevegal", "Orzes", "Pedeserva", "Pra de Lante", "Rivamaor", "Sagrogna", "Sala", "Salce", "San Pietro in Campo", "Sopracroda", "Sois", "Sossai", "Tisoi", "Vezzano", "Vignole", "Visome"],
-        "Feltre": ["Anzù", "Arson", "Canal di Limana", "Cart", "Fastro", "Foen", "Lasen", "Mugnai", "Nemeggio", "Pont", "Pren", "Tomo", "Umin", "Vellai", "Vignui", "Villabruna", "Villapaiera", "Zermen"],
-        "Borgo Valbelluna": ["Mel", "Trichiana", "Lentiai", "Carve", "Cesana", "Col di Mel", "Confos", "Farra", "Marcador", "Morgan", "Nave", "Pellegai", "Ronchena", "Sant'Antonio Tortal", "Stabie", "Villa di Villa"],
-        "Sedico": ["Bribano", "Libano", "Roe Alte", "Roe Basse", "Mas", "Peron", "Seghe di Villa", "Gresane"],
-        "Santa Giustina": ["Cergnai", "Formegan", "Meano", "Ignan", "Sartena"],
-        "Limana": ["Canè", "Cesa", "Coi di Navasa", "Dussoi", "Polentes", "Valmorel", "Triches"],
-        "Cortina d'Ampezzo": ["Acquabona", "Alverà", "Campo di Sopra", "Chiave", "Col", "Cortina", "Grava", "Mortisa", "Pecol", "Socol", "Verocai", "Zuel"],
-        "Pieve di Cadore": ["Nebbiù", "Pozzale", "Sottocastello", "Tai di Cadore"],
-        "Auronzo di Cadore": ["Misurina", "Reane", "San Marco", "Villapiccola", "Villagrande"],
-        "Santo Stefano di Cadore": ["Campolongo", "Casada", "Costalissoio"],
-        "San Pietro di Cadore": ["Costalta", "Presenaio", "Valle"],
-        "Calalzo di Cadore": ["Rizzios"],
-        "Vigo di Cadore": ["Laggio", "Pelos", "Pinié"],
-        "Agordo": ["Bries", "Brugnach", "Parech", "Prompicai", "Rif", "Toccol", "Valcozzena"],
-        "Alleghe": ["Caprile", "Santa Maria delle Grazie", "Sala", "Tos"],
-        "Falcade": ["Caviola", "Molino", "Sappade", "Somor"],
-        "Rocca Pietore": ["Digonera", "Laste", "Malga Ciapela", "Sottoguda"],
-        "Canale d'Agordo": ["Carfon", "Feder", "Garés"],
-        "Val di Zoldo": ["Forno", "Dont", "Fusine", "Mareson", "Pecol", "Pieve", "Coi"],
-        "Longarone": ["Castellavazzo", "Codissago", "Fortogna", "Igne", "Pirago", "Rivalta", "Roggia"],
-        "Ponte nelle Alpi": ["Cadola", "Canevoi", "Casan", "Col di Cugnan", "Cornolade", "Cugnan", "Lastreghe", "Paiane", "Polpet", "Quantin", "Revelin", "Roncan", "Soccher"],
-        "Alpago": ["Farra", "Pieve", "Puos", "Bastia", "Cornei", "Garna", "Sitran", "Tignes", "Torres", "Villa"],
-        "Chies d'Alpago": ["Lamosano", "San Martino", "Funes"],
-        "Tambre": ["All’Alpago", "Broz", "Sant'Anna"]
+    const s1 = document.getElementById('step-1'), s2 = document.getElementById('step-2'), s3 = document.getElementById('step-3');
+
+    window.onload = () => {
+        const saved = localStorage.getItem('bl_user');
+        if(saved) setupForm(JSON.parse(saved).n);
     };
 
-    const mainSelect = document.getElementById('main-loc');
-    const subSelect = document.getElementById('sub-loc');
-
-    Object.keys(data).forEach(comune => {
-        let opt = document.createElement('option');
-        opt.value = comune;
-        opt.innerHTML = comune;
-        mainSelect.appendChild(opt);
-    });
-
-    function updateSubLocs() {
-        const selected = mainSelect.value;
-        subSelect.innerHTML = '<option value="">Seleziona Località...</option>';
-        if (selected) {
-            data[selected].forEach(loc => {
-                let opt = document.createElement('option');
-                opt.value = loc;
-                opt.innerHTML = loc;
-                subSelect.appendChild(opt);
-            });
-            subSelect.disabled = false;
-        } else {
-            subSelect.disabled = true;
-        }
+    function initSession() {
+        const n = document.getElementById('u-name').value, e = document.getElementById('u-email').value, d = document.getElementById('u-dob').value;
+        if(!n || !e || !d) return alert("Completa il profilo");
+        localStorage.setItem('bl_user', JSON.stringify({n, e, d}));
+        setupForm(n);
     }
 
-    function savePersonalData() {
-        const n = document.getElementById('user-name').value;
-        const e = document.getElementById('user-email').value;
-        const d = document.getElementById('user-dob').value;
-        if(!n || !e || !d) return alert("Compila i dati personali.");
-        localStorage.setItem('user_data', JSON.stringify({n}));
-        showForm(n);
+    function setupForm(name) {
+        s1.classList.add('hidden'); s3.classList.add('hidden'); s2.classList.remove('hidden');
+        document.getElementById('user-display').innerText = "SESSIONE DI: " + name.toUpperCase();
+        window.scrollTo(0,0);
     }
 
-    function showForm(name) {
-        document.getElementById('personal-section').classList.add('hidden');
-        document.getElementById('success-screen').classList.add('hidden');
-        document.getElementById('place-form').classList.remove('hidden');
-        document.getElementById('user-greeting').innerText = "Inviando come: " + name;
+    function toggleMgmtName() {
+        const type = document.getElementById('p-mgmt-type').value;
+        const box = document.getElementById('mgmt-name-box');
+        // Mostra il campo nome se non è un gruppo informale
+        type !== 'inf' ? box.classList.remove('hidden') : box.classList.add('hidden');
     }
 
-    function submitForm() {
-        document.getElementById('place-form').classList.add('hidden');
-        document.getElementById('success-screen').classList.remove('hidden');
+    function submitData() {
+        s2.classList.add('hidden'); s3.classList.remove('hidden');
+        window.scrollTo(0,0);
     }
 
     function newEntry() {
-        document.getElementById('place-form').reset();
-        subSelect.disabled = true;
-        showForm(JSON.parse(localStorage.getItem('user_data')).n);
+        document.getElementById('step-2').reset();
+        toggleMgmtName(); // Reset visibilità
+        setupForm(JSON.parse(localStorage.getItem('bl_user')).n);
     }
 
-    function resetUser() {
-        localStorage.clear();
+    function resetProfile() {
+        localStorage.removeItem('bl_user');
         location.reload();
     }
-
-    window.onload = () => {
-        const saved = localStorage.getItem('user_data');
-        if(saved) showForm(JSON.parse(saved).n);
-    };
 </script>
 </body>
 </html>
