@@ -5,126 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mappatura Giovani Belluno</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        :root {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.15);
-            --text: #f1f5f9;
-            --muted: #94a3b8;
-            --input-bg: #0f172a;
-            --border: #334155;
-            --error: #ef4444;
-        }
-        body {
-            font-family: 'Inter', -apple-system, system-ui, sans-serif;
-            background-color: var(--bg);
-            background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
-        .container { max-width: 480px; width: 100%; }
-        .card { 
-            background: var(--card); 
-            padding: 2.5rem; 
-            border-radius: 20px; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(10px);
-        }
-        .section-title { 
-            color: var(--accent); 
-            font-size: 0.75rem; 
-            font-weight: 700;
-            text-transform: uppercase; 
-            letter-spacing: 0.1em; 
-            margin: 2rem 0 1rem; 
-            display: flex;
-            align-items: center;
-        }
-        .section-title::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(to right, var(--border), transparent);
-            margin-left: 1rem;
-        }
-        .form-group { margin-bottom: 1.25rem; }
-        label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text); }
-        
-        select, input, textarea { 
-            width: 100%; 
-            padding: 0.85rem; 
-            border-radius: 10px; 
-            border: 1px solid var(--border); 
-            background: var(--input-bg); 
-            color: white; 
-            box-sizing: border-box; 
-            font-size: 0.95rem;
-            font-family: inherit;
-        }
-        select:focus, input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 4px var(--accent-glow);
-        }
-
-        .social-row { display: flex; gap: 8px; margin-bottom: 8px; }
-        .btn-add { 
-            background: var(--accent-glow); 
-            color: var(--accent); 
-            border: 1px dashed var(--accent);
-            padding: 0.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            width: auto;
-            display: inline-block;
-        }
-        
-        .photo-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 0.75rem; }
-        .photo-btn {
-            background: var(--input-bg);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 0.75rem;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; gap: 5px;
-        }
-        
-        .preview-container {
-            width: 100%; height: 150px; border: 1px solid var(--border); border-radius: 10px;
-            display: none; overflow: hidden; margin-top: 10px; position: relative;
-        }
-        .preview-img { width: 100%; height: 100%; object-fit: cover; }
-        .remove-photo {
-            position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6);
-            color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;
-        }
-
-        #camera-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: black; z-index: 1000; flex-direction: column; align-items: center; justify-content: center;
-        }
-        #camera-stream { width: 100%; max-width: 480px; height: auto; }
-        .camera-controls { margin-top: 20px; display: flex; gap: 20px; }
-        
-        .other-input { margin-top: 0.75rem; display: none; border-color: var(--accent); }
-        
-        button { width: 100%; padding: 1rem; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; }
-        .btn-primary { background: var(--accent); color: #0f172a; margin-top: 1.5rem; }
-        .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); margin-top: 1rem; }
-        
-        .hidden { display: none; }
-        #map { width: 100%; height: 300px; border-radius: 12px; margin: 1.5rem 0; border: 1px solid var(--border); z-index: 1; }
-        .popup-img { width: 100%; max-width: 150px; border-radius: 8px; margin-top: 8px; display: block; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -148,23 +29,55 @@
     <form id="place-form" class="card hidden">
         <div id="user-greeting" style="font-size: 0.75rem; color: var(--accent); font-weight: bold; margin-bottom: 1rem;"></div>
 
+<!--SEZIONE 1: GENERALE-->
+        <!--titolo-->
+        <div class="section-title">Descrizione generale</div>
+        <!--nome dello spazio-->
+        <div class="form-group"><label>Nome dello spazio *</label><input type="text" id="place-name" placeholder="es. Skatepark Lambioi"></div>
+        <!--descrizione dello spazio-->
+        <div class="form-group">
+            <label>Descrizione</label>
+            <textarea id="place-desc" style="width:100%; height:80px; background:var(--input-bg); color:white; border:1px solid var(--border); border-radius:10px; padding:0.85rem;" placeholder="Racconta brevemente..."></textarea>
+        </div>
+        <!--foto-->
+        <div class="form-group">
+            <label>Foto dello spazio</label>
+            <div class="photo-options">
+                <button type="button" class="photo-btn" onclick="startCamera()">📸 Scatta</button>
+                <button type="button" class="photo-btn" onclick="document.getElementById('photo-upload').click()">📁 Carica</button>
+            </div>
+            <input type="file" id="photo-upload" accept="image/*" class="hidden" onchange="handleFile(this)">
+            <div id="preview-wrapper" class="preview-container"><img id="img-preview" class="preview-img"><button type="button" class="remove-photo" onclick="clearPhoto()">✕</button></div>
+        </div>
+
+        <!--SEZIONE 2: LOCALIZZAZIONE-->
+        <!--titolo-->
         <div class="section-title">Localizzazione</div>
+        <!--comune-->
         <div class="form-group">
             <label>Comune *</label>
             <select id="main-loc" onchange="populateSubLocs()"></select>
         </div>
-        <div class="form-group">
-            <label>Frazione / Località *</label>
-            <select id="sub-loc" onchange="toggleOther(this, 'other-loc')" disabled></select>
-            <input type="text" id="other-loc" class="other-input" placeholder="Specifica località...">
-        </div>
-        <div class="form-group">
-            <label>Indirizzo specifico *</label>
-            <input type="text" id="address" placeholder="es. Via Roma 12">
+            <!--frazione-->
+        <div id="address-section" class="hidden">
+            <div class="form-group">
+                <label>Frazione / Località *</label>
+                <select id="sub-loc" onchange="toggleOther(this, 'other-loc')" disabled></select>
+                <input type="text" id="other-loc" class="other-input" placeholder="Specifica località...">
+            </div>
+            <!--indirizzo specifico-->
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label>Indirizzo specifico *</label>
+                    <!--non conosci l'indirizzo?-->
+                    <span class="map-link" onclick="openMapPicker()">Non conosci l'indirizzo?</span>
+                </div>
+                <input type="text" id="address" placeholder="es. Via Roma 12">
+                <input type="hidden" id="manual-coords">
+            </div>
         </div>
         
-        <div class="form-group"><label>Nome dello spazio *</label><input type="text" id="place-name" placeholder="es. Skatepark Lambioi"></div>
-
+        <!--SEZIONE 3-->
         <div class="section-title">Tipologia</div>
         <div class="form-group">
             <label>Categoria *</label>
@@ -182,22 +95,7 @@
             <input type="text" id="other-subtype" class="other-input" placeholder="Descrivi il tipo...">
         </div>
 
-        <div class="section-title">Media e Descrizione</div>
-        <div class="form-group">
-            <label>Descrizione</label>
-            <textarea id="place-desc" style="width:100%; height:80px; background:var(--input-bg); color:white; border:1px solid var(--border); border-radius:10px; padding:0.85rem;" placeholder="Racconta brevemente..."></textarea>
-        </div>
-
-        <div class="form-group">
-            <label>Foto dello spazio</label>
-            <div class="photo-options">
-                <button type="button" class="photo-btn" onclick="startCamera()">📸 Scatta</button>
-                <button type="button" class="photo-btn" onclick="document.getElementById('photo-upload').click()">📁 Carica</button>
-            </div>
-            <input type="file" id="photo-upload" accept="image/*" class="hidden" onchange="handleFile(this)">
-            <div id="preview-wrapper" class="preview-container"><img id="img-preview" class="preview-img"><button type="button" class="remove-photo" onclick="clearPhoto()">✕</button></div>
-        </div>
-
+        <!--SEZIONE 4-->
         <div class="section-title">Gestione e Contatti</div>
         <div class="form-group">
             <label>Chi lo gestisce? *</label>
@@ -222,193 +120,33 @@
             <button type="button" id="add-social" class="btn-add" onclick="addSocialField()">+ Aggiungi link</button>
         </div>
 
+
+
+        <!--INVIO FORM-->
         <button type="button" class="btn-primary" onclick="submitForm()">Registra Luogo</button>
+        
+    
     </form>
 
     <div id="success-screen" class="card hidden" style="text-align:center;">
         <h2 style="color: var(--accent);">Luogo Mappato!</h2>
-        <p style="font-size: 0.8rem; color: var(--muted);">Trascina il puntatore se la posizione non è corretta.</p>
+        <p style="font-size: 0.8rem; color: var(--muted);">Posizione confermata sulla mappa.</p>
         <div id="map"></div>
         <button class="btn-primary" onclick="location.reload()">Aggiungi un altro</button>
         <button class="btn-secondary" onclick="resetUser()">Esci</button>
     </div>
 </div>
 
+<div id="map-picker-modal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg); z-index:2000; flex-direction:column;">
+    <div style="padding:20px; text-align:center;">
+        <p>Tocca il punto esatto sulla mappa</p>
+        <div id="picker-map" style="width:100%; height:70vh; border-radius:15px; border:1px solid var(--border);"></div>
+        <button class="btn-primary" onclick="confirmPicker()" style="margin-top:20px;">Conferma Posizione</button>
+        <button class="btn-secondary" onclick="closeMapPicker()">Annulla</button>
+    </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-    let map, marker, lastPhotoData = null, stream = null;
-
-    const categoryData = {
-        "pubblici": ["Aree verdi e Parchi", "Piazze e Spazi pedonali", "Sport all'aperto", "Sosta informale"],
-        "aggregazione": ["Hub creativi e Co-working", "Biblioteche e Aule studio", "Spazi Associativi e Religiosi", "Centri Giovani Istituzionali"],
-        "commerciali": ["Locali di Ristorazione", "Centri Commerciali", "Divertimento e Spettacolo", "Impianti Sportivi Privati"],
-        "transito": ["Nodi di Trasporto", "Aree di Risulta e Parcheggi", "Luoghi Dismessi"]
-    };
-
-const locationData = {
-        "Belluno": ["Antole", "Bolzano Bellunese", "Castion", "Cavessago", "Cet", "Chiesurazza", "Faverga", "Fiammoi", "Giamosa", "Giazzoi", "Levego", "Madeago", "Mier", "Nevegal", "Orzes", "Pedeserva", "Pra de Lante", "Rivamaor", "Sagrogna", "Sala", "Salce", "San Pietro in Campo", "Sopracroda", "Sois", "Sossai", "Tisoi", "Vezzano", "Vignole", "Visome"],
-        "Feltre": ["Anzù", "Arson", "Canal di Limana", "Cart", "Fastro", "Foen", "Lasen", "Mugnai", "Nemeggio", "Pont", "Pren", "Tomo", "Umin", "Vellai", "Vignui", "Villabruna", "Villapaiera", "Zermen"],
-        "Borgo Valbelluna": ["Mel", "Trichiana", "Lentiai", "Carve", "Cesana", "Col di Mel", "Confos", "Farra", "Marcador", "Morgan", "Nave", "Pellegai", "Ronchena", "Sant’Antonio Tortal", "Stabie", "Villa di Villa"],
-        "Sedico": ["Bribano", "Libano", "Roe Alte", "Roe Basse", "Mas", "Peron", "Seghe di Villa", "Gresane"],
-        "Alpago": ["Bastia", "Cornei", "Farra", "Garna", "Pieve", "Puos", "Sitran", "Tignes", "Torres", "Villa"],
-        "Ponte nelle Alpi": ["Cadola", "Canevoi", "Casan", "Col di Cugnan", "Cornolade", "Cugnan", "Lastreghe", "Paiane", "Polpet", "Quantin", "Revelin", "Roncan", "Soccher"],
-        "Cortina d’Ampezzo": ["Acquabona", "Alverà", "Campo di Sopra", "Chiave", "Col", "Grava", "Mortisa", "Pecol", "Socol", "Verocai", "Zuel"],
-        "Agordo": ["Bries", "Brugnach", "Parech", "Prompicai", "Rif", "Toccol", "Valcozzena"],
-        "Longarone": ["Castellavazzo", "Codissago", "Fortogna", "Igne", "Pirago", "Rivalta", "Roggia"],
-        "Santa Giustina": ["Cergnai", "Formegan", "Meano", "Ignan", "Sartena"],
-        "Limana": ["Canè", "Cesa", "Coi di Navasa", "Dussoi", "Polentes", "Valmorel", "Triches"],
-        "Pieve di Cadore": ["Nebbiù", "Pozzale", "Sottocastello", "Tai di Cadore"],
-        "Auronzo di Cadore": ["Misurina", "Reane", "San Marco", "Villapiccola", "Villagrande"],
-        "Val di Zoldo": ["Forno", "Dont", "Fusine", "Mareson", "Pecol", "Pieve", "Coi"],
-        "Cesiomaggiore": ["Alivie", "Busche", "Cesiola", "Col San Vito", "Cullagne", "Dorgnan", "Marsiai", "Menin", "Molinello", "Montagne", "Morzanch", "Nezze", "Pez", "Pullir", "Soranzen", "Toschian"],
-        "Pedavena": ["Facen", "Murle", "Norcen", "Teven", "Travagola"],
-        "Arsiè": ["Fastro", "Incino", "Mellame", "Rocca", "Rivai", "San Vito"],
-        "Sospirolo": ["Gron", "Maras", "Mis", "Oregne", "Pascoli", "San Gottardo"],
-        "Sovramonte": ["Aune", "Faller", "Molinello", "Moline", "Servo", "Sorriva", "Zorzoi"],
-        "Quero Vas": ["Caorera", "Carpen", "Quero", "Santa Maria", "Schievenin", "Vas"]
-    };
-
-    async function startCamera() {
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-            const video = document.getElementById('camera-stream');
-            video.srcObject = stream;
-            document.getElementById('camera-modal').style.display = 'flex';
-        } catch (err) {
-            alert("Impossibile accedere alla fotocamera. Carica un file.");
-            document.getElementById('photo-upload').click();
-        }
-    }
-
-    function stopCamera() {
-        if (stream) stream.getTracks().forEach(track => track.stop());
-        document.getElementById('camera-modal').style.display = 'none';
-    }
-
-    function captureSnapshot() {
-        const video = document.getElementById('camera-stream');
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-        lastPhotoData = canvas.toDataURL('image/jpeg');
-        document.getElementById('img-preview').src = lastPhotoData;
-        document.getElementById('preview-wrapper').style.display = 'block';
-        stopCamera();
-    }
-
-    function handleFile(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                lastPhotoData = e.target.result;
-                document.getElementById('img-preview').src = lastPhotoData;
-                document.getElementById('preview-wrapper').style.display = 'block';
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    function clearPhoto() { lastPhotoData = null; document.getElementById('preview-wrapper').style.display = 'none'; }
-
-    function addSocialField() {
-        const container = document.getElementById('social-container');
-        const count = container.querySelectorAll('.social-row').length;
-        if (count < 5) {
-            const div = document.createElement('div');
-            div.className = 'social-row';
-            div.innerHTML = '<input type="url" class="social-link" placeholder="https://...">';
-            container.appendChild(div);
-            if (count + 1 === 5) document.getElementById('add-social').style.display = 'none';
-        }
-    }
-
-    function populateSubLocs() {
-        const subSel = document.getElementById('sub-loc');
-        const city = document.getElementById('main-loc').value;
-        subSel.innerHTML = '<option value="" disabled selected>Scegli...</option>';
-        if (city) {
-            locationData[city].forEach(s => subSel.innerHTML += `<option value="${s}">${s}</option>`);
-            subSel.innerHTML += '<option value="altro">Altro...</option>';
-            subSel.disabled = false;
-        }
-    }
-
-    const mainSel = document.getElementById('main-loc');
-    mainSel.innerHTML = '<option value="" disabled selected>Comune...</option>';
-    Object.keys(locationData).sort().forEach(loc => mainSel.innerHTML += `<option value="${loc}">${loc}</option>`);
-
-    function updateSubTypes() {
-        const macro = document.getElementById('macro-type').value;
-        const subSel = document.getElementById('sub-type');
-        const container = document.getElementById('sub-type-container');
-        subSel.innerHTML = '<option value="" disabled selected>Scegli dettaglio...</option>';
-        if (categoryData[macro]) {
-            categoryData[macro].forEach(t => subSel.innerHTML += `<option value="${t}">${t}</option>`);
-            subSel.innerHTML += '<option value="altro">Altro...</option>';
-            container.classList.remove('hidden');
-        }
-    }
-
-    function toggleManagementName() {
-        const mgmt = document.getElementById('management').value;
-        document.getElementById('management-name').style.display = (mgmt && !['non_so', 'altro'].includes(mgmt)) ? 'block' : 'none';
-    }
-
-    function toggleOther(select, inputId) {
-        document.getElementById(inputId).style.display = (select.value === "altro") ? "block" : "none";
-    }
-
-    function savePersonalData() {
-        const nome = document.getElementById('user-name').value;
-        if (!nome) return alert("Inserisci il nome");
-        localStorage.setItem('user_data', JSON.stringify({nome}));
-        showForm(nome);
-    }
-
-    function showForm(name) {
-        document.getElementById('personal-section').classList.add('hidden');
-        document.getElementById('place-form').classList.remove('hidden');
-        document.getElementById('user-greeting').innerText = `Ciao ${name}!`;
-    }
-
-    async function submitForm() {
-        const form = document.getElementById('place-form');
-        if(!form.checkValidity()) return form.reportValidity();
-        
-        const spaceName = document.getElementById('place-name').value;
-        const address = document.getElementById('address').value;
-        const commune = document.getElementById('main-loc').value;
-
-        document.getElementById('place-form').classList.add('hidden');
-        document.getElementById('success-screen').classList.remove('hidden');
-
-        if (!map) {
-            map = L.map('map').setView([46.14, 12.21], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        }
-
-        const query = `${address}, ${commune}, Belluno, Italy`;
-        try {
-            const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
-            const data = await resp.json();
-            const latlng = data.length > 0 ? [data[0].lat, data[0].lon] : [46.14, 12.21];
-            map.setView(latlng, 16);
-            if (marker) marker.remove();
-            marker = L.marker(latlng, {draggable: true}).addTo(map);
-            let content = `<b>${spaceName}</b>`;
-            if (lastPhotoData) content += `<br><img src="${lastPhotoData}" class="popup-img">`;
-            marker.bindPopup(content).openPopup();
-        } catch (e) {}
-        setTimeout(() => map.invalidateSize(), 200);
-    }
-
-    function resetUser() { localStorage.removeItem('user_data'); location.reload(); }
-
-    window.onload = () => {
-        const saved = localStorage.getItem('user_data');
-        if (saved) showForm(JSON.parse(saved).nome);
-    };
-</script>
+<script src="script.js"></script>
 </body>
 </html>
