@@ -9,228 +9,319 @@
             --bg: #0f172a;
             --card: #1e293b;
             --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.15);
             --text: #f1f5f9;
             --muted: #94a3b8;
+            --input-bg: #1e293b;
+            --border: #334155;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
             background-color: var(--bg);
+            background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
             color: var(--text);
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
+            min-height: 100vh;
         }
-        .container { max-width: 500px; width: 100%; }
-        .card { background: var(--card); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .section-title { color: var(--accent); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin: 1.5rem 0 1rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
-        input, select { width: 100%; padding: 0.75rem; border-radius: 6px; border: 1px solid #334155; background: var(--bg); color: white; box-sizing: border-box; font-size: 0.95rem; }
+        .container { max-width: 480px; width: 100%; }
+        .card { 
+            background: var(--card); 
+            padding: 2.5rem; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+        .section-title { 
+            color: var(--accent); 
+            font-size: 0.75rem; 
+            font-weight: 700;
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            margin: 2rem 0 1rem; 
+            display: flex;
+            align-items: center;
+        }
+        .section-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, var(--border), transparent);
+            margin-left: 1rem;
+        }
+        .form-group { margin-bottom: 1.25rem; }
+        label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text); }
+        
+        select, input { 
+            width: 100%; 
+            padding: 0.85rem; 
+            border-radius: 10px; 
+            border: 1px solid var(--border); 
+            background: #0f172a; 
+            color: white; 
+            box-sizing: border-box; 
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+        }
+        
         .other-input { margin-top: 0.75rem; display: none; border-color: var(--accent); }
-        button { width: 100%; padding: 1rem; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; }
-        .btn-primary { background: var(--accent); color: var(--bg); margin-top: 1rem; }
-        .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--muted); margin-top: 0.5rem; font-size: 0.8rem; }
+        
+        button { 
+            width: 100%; 
+            padding: 1rem; 
+            border-radius: 12px; 
+            border: none; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: transform 0.1s active;
+        }
+        .btn-primary { 
+            background: var(--accent); 
+            color: #0f172a; 
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 14px 0 rgba(56, 189, 248, 0.39);
+        }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        
+        .btn-secondary { 
+            background: transparent; 
+            color: var(--muted); 
+            border: 1px solid var(--border); 
+            margin-top: 1rem; 
+            font-size: 0.85rem; 
+        }
+        
         .hidden { display: none; }
-        .context-info { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.4; }
-        .summary-box { background: #0f172a; padding: 1rem; border-radius: 8px; text-align: left; margin-bottom: 1.5rem; font-size: 0.9rem; border-left: 4px solid var(--accent); }
-        .summary-item { margin-bottom: 0.6rem; border-bottom: 1px solid #1e293b; padding-bottom: 0.3rem; }
-        .summary-label { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; display: block; margin-bottom: 2px; }
+        .summary-box { 
+            background: rgba(15, 23, 42, 0.5); 
+            padding: 1.5rem; 
+            border-radius: 12px; 
+            text-align: left; 
+            margin: 1.5rem 0; 
+            border-left: 3px solid var(--accent);
+        }
+        .summary-item { margin-bottom: 0.8rem; }
+        .summary-label { color: var(--muted); font-size: 0.65rem; text-transform: uppercase; display: block; margin-bottom: 0.2rem; }
+        .summary-value { font-weight: 500; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="personal-section" class="card">
-        <div class="section-title">Profilo Utente</div>
-        <p class="context-info">Il tuo contributo è essenziale per mappare gli spazi di aggregazione nella provincia di Belluno.</p>
-        <div class="form-group"><label>Nome e Cognome</label><input type="text" id="user-name"></div>
-        <div class="form-group"><label>Email</label><input type="email" id="user-email"></div>
+        <h1 style="margin-top:0; font-size: 1.5rem;">Benvenuto</h1>
+        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem;">Inizia a mappare i luoghi dei giovani a Belluno.</p>
+        
+        <div class="form-group"><label>Nome e Cognome</label><input type="text" id="user-name" placeholder="Mario Rossi"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="user-email" placeholder="mario@esempio.it"></div>
         <div class="form-group"><label>Data di Nascita</label><input type="date" id="user-dob"></div>
         <button class="btn-primary" onclick="savePersonalData()">Inizia Mappatura</button>
     </div>
 
     <form id="place-form" class="card hidden">
-        <div id="user-greeting" style="font-size: 0.8rem; color: var(--accent); margin-bottom: 1rem;"></div>
+        <div id="user-greeting" style="font-size: 0.75rem; color: var(--accent); font-weight: bold; background: var(--accent-glow); padding: 4px 12px; border-radius: 20px; display: inline-block; margin-bottom: 1rem;"></div>
 
-        <div class="section-title">Informazioni Luogo</div>
-        <div class="form-group"><label>Nome dello spazio</label><input type="text" id="place-name" required></div>
-
+        <div class="section-title">Localizzazione</div>
         <div class="form-group">
             <label>Comune</label>
             <select id="main-loc" onchange="populateSubLocs()" required></select>
         </div>
-
         <div class="form-group">
             <label>Frazione / Località</label>
             <select id="sub-loc" onchange="toggleOther(this, 'other-loc')" required disabled></select>
             <input type="text" id="other-loc" class="other-input" placeholder="Specifica località...">
         </div>
-        
-        <div class="section-title">Classificazione</div>
+        <div class="form-group"><label>Nome dello spazio</label><input type="text" id="place-name" placeholder="es. Skatepark Lambioi" required></div>
+
+        <div class="section-title">Tipologia</div>
         <div class="form-group">
-            <label>Tipologia</label>
-            <select id="place-type" onchange="toggleOther(this, 'other-type')" required>
-                <option value="" disabled selected>Seleziona tipologia...</option>
-                <option value="Istituzionale">Istituzionale (Informagiovani, Biblioteche, Centri aggregazione)</option>
-                <option value="Informale">Informale (Piazze, Parchi, Muretti, Parchi gioco)</option>
-                <option value="Commerciale">Commerciale (Bar, Pub, Centri commerciali, Sale giochi)</option>
-                <option value="Sportivo">Sportivo (Campetti, Skatepark, Palestre)</option>
-                <option value="Culturale/Associativo">Culturale/Associativo (Circoli, Centri sociali, Sale prove)</option>
-                <option value="altro">Altro...</option>
+            <label>Categoria</label>
+            <select id="macro-type" onchange="updateSubTypes()" required>
+                <option value="" disabled selected>Seleziona categoria...</option>
+                <option value="pubblici">1. Spazi Pubblici e Aperti <span style="font-size: 0.8em; color: gray; font-style: italic;">(es. parchi, piazze)</span></option>
+                <option value="aggregazione">2. Centri di Aggregazione <span style="font-size: 0.8em; color: gray; font-style: italic;">(es. oratori, hub)</span></option>
+                <option value="commerciali">3. Spazi Commerciali <span style="font-size: 0.8em; color: gray; font-style: italic;">(es. bar, cinema)</span></option>
+                <option value="transito">4. Spazi di Transito <span style="font-size: 0.8em; color: gray; font-style: italic;">(es. stazioni, parcheggi)</span></option>
             </select>
-            <input type="text" id="other-type" class="other-input" placeholder="Specifica tipologia...">
         </div>
 
+        <div id="sub-type-container" class="form-group hidden">
+            <select id="sub-type" onchange="toggleOther(this, 'other-subtype')" required></select>
+            <input type="text" id="other-subtype" class="other-input" placeholder="Descrivi il tipo di spazio...">
+        </div>
+
+        <div class="section-title">Gestione</div>
         <div class="form-group">
-            <label>Gestione</label>
-            <select id="mgmt" onchange="toggleOther(this, 'other-mgmt')" required>
+            <label>Chi lo gestisce?</label>
+            <select id="management" onchange="toggleManagementName(); toggleOther(this, 'other-mgmt')" required>
                 <option value="" disabled selected>Seleziona gestione...</option>
-                <option value="Comune / Ente Pubblico">Comune / Ente Pubblico</option>
-                <option value="Associazione / Parrocchia">Associazione / Parrocchia</option>
-                <option value="Privato">Privato</option>
-                <option value="Gruppo autorganizzato">Gruppo autorganizzato</option>
+                <option value="Amministrazione Pubblica">Amministrazione Pubblica <span style="font-size: 0.8em; color: gray; font-style: italic;">(es. Comune, Provincia)</span></option>
+                <option value="Ente Religioso">Ente Religioso <span style="font-size: 0.8em; color: gray; font-style: italic;">(es. Parrocchia, Diocesi)</span></option>
+                <option value="Impresa o Soggetto Privato">Impresa o Soggetto Privato <span style="font-size: 0.8em; color: gray; font-style: italic;">(es. Azienda, Bar)</span></option>
+                <option value="Associazione o Cooperativa Sociale">Associazione o Cooperativa Sociale <span style="font-size: 0.8em; color: gray; font-style: italic;">(es. Onlus, ASD)</span></option>
+                <option value="Gruppo Autogestito o Informale">Gruppo Autogestito o Informale <span style="font-size: 0.8em; color: gray; font-style: italic;">(es. Collettivo)</span></option>
+                <option value="non_so">Non lo so</option>
                 <option value="altro">Altro...</option>
             </select>
-            <input type="text" id="other-mgmt" class="other-input" placeholder="Specifica gestione...">
+            <input type="text" id="management-name" class="other-input" placeholder="Nome specifico del gestore...">
+            <input type="text" id="other-mgmt" class="other-input" placeholder="Specifica tipo di gestione...">
         </div>
 
-        <div class="form-group">
-            <label>Modalità di Accesso</label>
-            <select id="access" onchange="toggleOther(this, 'other-access')" required>
-                <option value="" disabled selected>Seleziona accesso...</option>
-                <option value="Libero/Gratuito">Libero/Gratuito</option>
-                <option value="Tessera/Iscrizione">Tessera/Iscrizione</option>
-                <option value="Solo consumazione">Solo consumazione</option>
-                <option value="altro">Altro...</option>
-            </select>
-            <input type="text" id="other-access" class="other-input" placeholder="Specifica accesso...">
-        </div>
-
-        <div class="section-title">Esperienza Personale</div>
-        <div class="form-group">
-            <label>Il tuo ruolo</label>
-            <select id="user-role" onchange="toggleOther(this, 'other-role')" required>
-                <option value="" disabled selected>Seleziona ruolo...</option>
-                <option value="Studente">Studente</option>
-                <option value="Lavoratore">Lavoratore</option>
-                <option value="Attivista / Volontario">Attivista / Volontario</option>
-                <option value="Residente">Residente</option>
-                <option value="altro">Altro...</option>
-            </select>
-            <input type="text" id="other-role" class="other-input" placeholder="Specifica ruolo...">
-        </div>
-
-        <button type="button" class="btn-primary" onclick="submitForm()">Invia Risposta</button>
-        <button type="button" class="btn-secondary" onclick="resetUser()">Cambia Utente (Reset)</button>
+        <button type="button" class="btn-primary" onclick="submitForm()">Registra Luogo</button>
+        <button type="button" class="btn-secondary" onclick="resetUser()">Cambia Profilo</button>
     </form>
 
     <div id="success-screen" class="card hidden" style="text-align:center;">
-        <h2 style="color: var(--accent)">Registrazione Completata</h2>
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📍</div>
+        <h2 style="color: var(--accent); margin-bottom: 0.5rem;">Luogo Mappato!</h2>
+        <p style="color: var(--muted); font-size: 0.9rem;">Grazie per il tuo contributo.</p>
+        
         <div id="summary-container" class="summary-box"></div>
-        <p>Grazie per il tuo contributo alla provincia di Belluno.</p>
-        <button class="btn-primary" onclick="newEntry()">Inserisci un altro luogo</button>
-        <button class="btn-secondary" onclick="window.close()">Esci</button>
+        
+        <button class="btn-primary" onclick="newEntry()">Aggiungi un altro luogo</button>
+        <button class="btn-secondary" onclick="resetUser()">Esci</button>
     </div>
 </div>
 
 <script>
-    const locationData = {
-        "Belluno (Capoluogo)": ["Antole", "Bolzano Bellunese", "Caviola", "Castion", "Cavessago", "Cet", "Chiesurazza", "Faverga", "Fiammoi", "Giamosa", "Giazzoi", "Levego", "Madeago", "Miér", "Nevegal", "Orzes", "Pedeserva", "Pra de Lante", "Rivamaor", "Sagrogna", "Sala", "Salce", "San Pietro in Campo", "Sopracroda", "Sois", "Sossai", "Tisoi", "Vezzano", "Vignole", "Visome"],
-        "Feltre": ["Anzù", "Arson", "Canal di Limana", "Cart", "Fastro", "Foen", "Lasen", "Mugnai", "Nemeggio", "Pont", "Pren", "Tomo", "Umin", "Vellai", "Vignui", "Villabruna", "Villapaiera", "Zermen"],
-        "Borgo Valbelluna": ["Mel", "Trichiana", "Lentiai", "Carve", "Cesana", "Col di Mel", "Confos", "Farra", "Marcador", "Morgan", "Nave", "Pellegai", "Ronchena", "Sant'Antonio Tortal", "Stabie", "Villa di Villa"],
-        "Sedico": ["Bribano", "Libano", "Roe Alte", "Roe Basse", "Mas", "Peron", "Seghe di Villa", "Gresane"],
-        "Santa Giustina": ["Cergnai", "Formegan", "Meano", "Ignan", "Sartena"],
-        "Limana": ["Canè", "Cesa", "Coi di Navasa", "Dussoi", "Polentes", "Valmorel", "Triches"],
-        "Alpago": ["Farra", "Pieve", "Puos", "Bastia", "Cornei", "Garna", "Sitran", "Tignes", "Torres", "Villa"],
-        "Cortina d'Ampezzo": ["Acquabona", "Alverà", "Campo di Sopra", "Chiave", "Col", "Cortina", "Grava", "Mortisa", "Pecol", "Socol", "Verocai", "Zuel"],
-        "Pieve di Cadore": ["Nebbiù", "Pozzale", "Sottocastello", "Tai di Cadore"],
-        "Auronzo di Cadore": ["Misurina", "Reane", "San Marco", "Villapiccola", "Villagrande"],
-        "Santo Stefano di Cadore": ["Campolongo", "Casada", "Costalissoio"],
-        "San Pietro di Cadore": ["Costalta", "Presenaio", "Valle"],
-        "Calalzo di Cadore": ["Rizzios"],
-        "Vigo di Cadore": ["Laggio", "Pelos", "Pinié"],
-        "Agordo": ["Bries", "Brugnach", "Parech", "Prompicai", "Rif", "Toccol", "Valcozzena"],
-        "Alleghe": ["Caprile", "Santa Maria delle Grazie", "Sala", "Tos"],
-        "Falcade": ["Caviola", "Molino", "Sappade", "Somor"],
-        "Rocca Pietore": ["Digonera", "Laste", "Malga Ciapela", "Sottoguda"],
-        "Canale d'Agordo": ["Carfon", "Feder", "Garés"],
-        "Val di Zoldo": ["Forno", "Dont", "Fusine", "Mareson", "Pecol", "Pieve", "Coi"],
-        "Longarone": ["Castellavazzo", "Codissago", "Fortogna", "Igne", "Pirago", "Rivalta", "Roggia"],
-        "Ponte nelle Alpi": ["Cadola", "Canevoi", "Casan", "Col di Cugnan", "Cornolade", "Cugnan", "Lastreghe", "Paiane", "Polpet", "Quantin", "Revelin", "Roncan", "Soccher"],
-        "Chies d'Alpago": ["Lamosano", "San Martino", "Funes"],
-        "Tambre": ["All’Alpago", "Broz", "Sant'Anna"]
+    const categoryData = {
+        "pubblici": ["Aree verdi e Parchi (es. giardini pubblici, boschi)", "Piazze e Spazi pedonali (es. sagrati)", "Sport all'aperto (es. skatepark, campetti liberi)", "Sosta informale (es. muretti, scalinate)"],
+        "aggregazione": ["Hub creativi e Co-working (es. laboratori)", "Biblioteche e Aule studio", "Spazi Associativi e Religiosi (es. oratori, circoli)", "Centri Giovani Istituzionali (es. CAG)"],
+        "commerciali": ["Locali di Ristorazione (es. pub, caffetterie)", "Centri Commerciali e Mall", "Divertimento e Spettacolo (es. cinema, sale giochi)", "Impianti Sportivi Privati (es. palestre)"],
+        "transito": ["Nodi di Trasporto (es. stazioni, fermate)", "Aree di Risulta e Parcheggi", "Luoghi Dismessi o Abbandonati"]
     };
 
-    const mainSel = document.getElementById('main-loc');
-    const subSel = document.getElementById('sub-loc');
+const locationData = {
+    "Belluno": ["Antole", "Bolzano Bellunese", "Castion", "Cavessago", "Cet", "Chiesurazza", "Faverga", "Fiammoi", "Giamosa", "Giazzoi", "Levego", "Madeago", "Mier", "Nevegal", "Orzes", "Pedeserva", "Pra de Lante", "Rivamaor", "Sagrogna", "Sala", "Salce", "San Pietro in Campo", "Sopracroda", "Sois", "Sossai", "Tisoi", "Vezzano", "Vignole", "Visome"],
+    "Feltre": ["Anzù", "Arson", "Canal di Limana", "Cart", "Fastro", "Foen", "Lasen", "Mugnai", "Nemeggio", "Pont", "Pren", "Tomo", "Umin", "Vellai", "Vignui", "Villabruna", "Villapaiera", "Zermen"],
+    "Borgo Valbelluna": ["Mel", "Trichiana", "Lentiai", "Carve", "Cesana", "Col di Mel", "Confos", "Farra", "Marcador", "Morgan", "Nave", "Pellegai", "Ronchena", "Sant'Antonio Tortal", "Stabie", "Villa di Villa"],
+    "Sedico": ["Bribano", "Libano", "Roe Alte", "Roe Basse", "Mas", "Peron", "Seghe di Villa", "Gresane"],
+    "Alpago": ["Bastia", "Cornei", "Farra", "Garna", "Pieve", "Puos", "Sitran", "Tignes", "Torres", "Villa"],
+    "Ponte nelle Alpi": ["Cadola", "Canevoi", "Casan", "Col di Cugnan", "Cornolade", "Cugnan", "Lastreghe", "Paiane", "Polpet", "Quantin", "Revelin", "Roncan", "Soccher"],
+    "Cortina d'Ampezzo": ["Acquabona", "Alverà", "Campo di Sopra", "Chiave", "Col", "Grava", "Mortisa", "Pecol", "Socol", "Verocai", "Zuel"],
+    "Agordo": ["Bries", "Brugnach", "Parech", "Prompicai", "Rif", "Toccol", "Valcozzena"],
+    "Longarone": ["Castellavazzo", "Codissago", "Fortogna", "Igne", "Pirago", "Rivalta", "Roggia"],
+    "Santa Giustina": ["Cergnai", "Formegan", "Meano", "Ignan", "Sartena"],
+    "Limana": ["Canè", "Cesa", "Coi di Navasa", "Dussoi", "Polentes", "Valmorel", "Triches"],
+    "Pieve di Cadore": ["Nebbiù", "Pozzale", "Sottocastello", "Tai di Cadore"],
+    "Auronzo di Cadore": ["Misurina", "Reane", "San Marco", "Villapiccola", "Villagrande"],
+    "Val di Zoldo": ["Forno", "Dont", "Fusine", "Mareson", "Pecol", "Pieve", "Coi"],
+    "Cesiomaggiore": ["Alivie", "Busche", "Cesiola", "Col San Vito", "Cullagne", "Dorgnan", "Marsiai", "Menin", "Molinello", "Montagne", "Morzanch", "Nezze", "Pez", "Pullir", "Soranzen", "Toschian"],
+    "Pedavena": ["Facen", "Murle", "Norcen", "Teven", "Travagola"],
+    "Arsiè": ["Fastro", "Incino", "Mellame", "Rocca", "Rivai", "San Vito"],
+    "Sospirolo": ["Gron", "Maras", "Mis", "Oregne", "Pascoli", "San Gottardo"],
+    "Sovramonte": ["Aune", "Faller", "Molinello", "Moline", "Servo", "Sorriva", "Zorzoi"],
+    "Quero Vas": ["Caorera", "Carpen", "Quero", "Santa Maria", "Schievenin", "Vas"]
+};
 
-    mainSel.innerHTML = '<option value="" disabled selected>Seleziona Comune...</option>';
+    // Inizializzazione Comuni
+    const mainSel = document.getElementById('main-loc');
+    mainSel.innerHTML = '<option value="" disabled selected>Scegli Comune...</option>';
     Object.keys(locationData).sort().forEach(loc => {
         let opt = document.createElement('option');
-        opt.value = loc;
-        opt.textContent = loc;
+        opt.value = loc; opt.textContent = loc;
         mainSel.appendChild(opt);
     });
 
     function populateSubLocs() {
-        const selected = mainSel.value;
-        subSel.innerHTML = '<option value="" disabled selected>Seleziona Località...</option>';
-        if (selected && locationData[selected]) {
-            locationData[selected].forEach(s => {
+        const subSel = document.getElementById('sub-loc');
+        subSel.innerHTML = '<option value="" disabled selected>Scegli Località...</option>';
+        if (mainSel.value) {
+            locationData[mainSel.value].forEach(s => {
                 let opt = document.createElement('option');
-                opt.value = s;
-                opt.textContent = s;
+                opt.value = s; opt.textContent = s;
                 subSel.appendChild(opt);
             });
-            let otherOpt = document.createElement('option');
-            otherOpt.value = "altro";
-            otherOpt.textContent = "Altro...";
-            subSel.appendChild(otherOpt);
+            subSel.innerHTML += '<option value="altro">Altro...</option>';
             subSel.disabled = false;
+        }
+    }
+
+    function updateSubTypes() {
+        const macro = document.getElementById('macro-type').value;
+        const container = document.getElementById('sub-type-container');
+        const subSel = document.getElementById('sub-type');
+        subSel.innerHTML = '<option value="" disabled selected>Scegli dettaglio...</option>';
+        
+        if (categoryData[macro]) {
+            categoryData[macro].forEach(text => {
+                let opt = document.createElement('option');
+                opt.value = text; opt.textContent = text;
+                subSel.appendChild(opt);
+            });
+            subSel.innerHTML += '<option value="altro">Altro...</option>';
+            container.classList.remove('hidden');
+        }
+    }
+
+    function toggleManagementName() {
+        const mgmtVal = document.getElementById('management').value;
+        const nameInput = document.getElementById('management-name');
+        if (mgmtVal && mgmtVal !== 'non_so' && mgmtVal !== 'altro') {
+            nameInput.style.display = 'block';
+            nameInput.required = true;
+        } else {
+            nameInput.style.display = 'none';
+            nameInput.required = false;
+            nameInput.value = "";
         }
     }
 
     function toggleOther(select, inputId) {
         const input = document.getElementById(inputId);
-        if(select.value === "altro") {
-            input.style.display = "block";
-            input.required = true;
-        } else {
-            input.style.display = "none";
-            input.required = false;
-        }
+        input.style.display = (select.value === "altro") ? "block" : "none";
+        input.required = (select.value === "altro");
     }
 
     function savePersonalData() {
         const nome = document.getElementById('user-name').value;
-        if (!nome || !document.getElementById('user-email').value || !document.getElementById('user-dob').value) return alert("Dati incompleti");
-        localStorage.setItem('user_data', JSON.stringify({nome}));
+        const email = document.getElementById('user-email').value;
+        const dob = document.getElementById('user-dob').value;
+        if (!nome || !email || !dob) return alert("Completa il tuo profilo");
+        localStorage.setItem('user_data', JSON.stringify({nome, email, dob}));
         showForm(nome);
+    }
+
+    function checkUserStatus() {
+        const saved = localStorage.getItem('user_data');
+        if (saved) {
+            const user = JSON.parse(saved);
+            showForm(user.nome);
+        }
     }
 
     function showForm(name) {
         document.getElementById('personal-section').classList.add('hidden');
         document.getElementById('success-screen').classList.add('hidden');
         document.getElementById('place-form').classList.remove('hidden');
-        document.getElementById('user-greeting').innerText = "Sessione di: " + name;
-    }
-
-    function getVal(id, otherId) {
-        const sel = document.getElementById(id);
-        return sel.value === "altro" ? document.getElementById(otherId).value : sel.value;
+        document.getElementById('user-greeting').innerText = name;
     }
 
     function submitForm() {
-        if(!document.getElementById('place-form').checkValidity()) return alert("Per favore, compila tutti i campi richiesti.");
+        const form = document.getElementById('place-form');
+        if(!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const getVal = (id, otherId) => {
+            const s = document.getElementById(id);
+            return s.value === "altro" ? document.getElementById(otherId).value : s.value;
+        };
 
         const summaryHTML = `
-            <div class="summary-item"><span class="summary-label">Nome Luogo</span>${document.getElementById('place-name').value}</div>
-            <div class="summary-item"><span class="summary-label">Ubicazione</span>${getVal('sub-loc', 'other-loc')} (${document.getElementById('main-loc').value})</div>
-            <div class="summary-item"><span class="summary-label">Tipologia</span>${getVal('place-type', 'other-type')}</div>
-            <div class="summary-item"><span class="summary-label">Gestione</span>${getVal('mgmt', 'other-mgmt')}</div>
-            <div class="summary-item"><span class="summary-label">Accesso</span>${getVal('access', 'other-access')}</div>
-            <div class="summary-item"><span class="summary-label">Ruolo</span>${getVal('user-role', 'other-role')}</div>
+            <div class="summary-item"><span class="summary-label">Luogo</span><span class="summary-value">${document.getElementById('place-name').value}</span></div>
+            <div class="summary-item"><span class="summary-label">Località</span><span class="summary-value">${getVal('sub-loc', 'other-loc')} (${mainSel.value})</span></div>
+            <div class="summary-item"><span class="summary-label">Tipologia</span><span class="summary-value">${getVal('sub-type', 'other-subtype')}</span></div>
+            <div class="summary-item"><span class="summary-label">Gestione</span><span class="summary-value">${getVal('management', 'other-mgmt')} ${document.getElementById('management-name').value ? '— ' + document.getElementById('management-name').value : ''}</span></div>
         `;
         
         document.getElementById('summary-container').innerHTML = summaryHTML;
@@ -240,9 +331,9 @@
 
     function newEntry() {
         document.getElementById('place-form').reset();
+        document.getElementById('sub-type-container').classList.add('hidden');
         document.querySelectorAll('.other-input').forEach(i => i.style.display = 'none');
-        subSel.disabled = true;
-        showForm(JSON.parse(localStorage.getItem('user_data')).nome);
+        checkUserStatus();
     }
 
     function resetUser() {
@@ -250,10 +341,7 @@
         location.reload();
     }
 
-    window.onload = () => {
-        const saved = localStorage.getItem('user_data');
-        if (saved) showForm(JSON.parse(saved).nome);
-    };
+    window.onload = checkUserStatus;
 </script>
 </body>
 </html>
