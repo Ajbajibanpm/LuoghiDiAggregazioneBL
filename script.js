@@ -30,18 +30,29 @@ const categoryData = {
     "transito": ["Nodi di Trasporto", "Aree di Risulta e Parcheggi", "Luoghi Dismessi"]
 };
 
+// --- LOGICA DATI PERSONALI ---
+
 function savePersonalData() {
     const n = document.getElementById('user-name').value;
-    if (!n) return alert("Nome obbligatorio");
-    localStorage.setItem('user_data', JSON.stringify({nome: n}));
+    const e = document.getElementById('user-email').value;
+    const d = document.getElementById('user-dob').value;
+
+    if (!n || !e || !d) {
+        return alert("Nome, Email e Data di Nascita sono obbligatori.");
+    }
+
+    const userData = { nome: n, email: e, nascita: d };
+    localStorage.setItem('user_data', JSON.stringify(userData));
     showForm(n);
 }
 
-function showForm(n) {
+function showForm(nome) {
     document.getElementById('personal-section').classList.add('hidden');
     document.getElementById('place-form').classList.remove('hidden');
-    document.getElementById('user-greeting').innerText = `Ciao ${n}!`;
+    document.getElementById('user-greeting').innerText = `Ciao ${nome}!`;
 }
+
+// --- LOGICA FORM ---
 
 function populateSubLocs() {
     const city = document.getElementById('main-loc').value;
@@ -75,69 +86,31 @@ function toggleOther(select, inputId) {
 function toggleManagementName() {
     const val = document.getElementById('management').value;
     const nameInput = document.getElementById('management-name');
-    const otherMgmtInput = document.getElementById('other-mgmt');
-
-    // Mostra il nome del gestore per tutti tranne "non_so"
-    if (val && val !== 'non_so') {
-        nameInput.style.display = 'block';
-    } else {
-        nameInput.style.display = 'none';
-    }
-
-    // Mostra l'input specifico se viene selezionato "altro"
-    if (val === 'altro') {
-        otherMgmtInput.style.display = 'block';
-    } else {
-        otherMgmtInput.style.display = 'none';
-    }
+    nameInput.style.display = (val && val !== 'non_so') ? 'block' : 'none';
 }
 
 function addSocialField() {
     const container = document.getElementById('social-container');
     const rows = container.getElementsByClassName('social-row');
-
     if (rows.length < 5) {
         const newRow = document.createElement('div');
         newRow.className = 'social-row';
         newRow.style.marginTop = '8px';
-        
-        const newInput = document.createElement('input');
-        newInput.type = 'url';
-        newInput.className = 'social-link';
-        newInput.placeholder = 'https://...';
-        
-        newInput.addEventListener('input', function() {
-            this.value = this.value.replace(/\s+/g, '');
-        });
-
-        newRow.appendChild(newInput);
+        newRow.innerHTML = `<input type="url" class="social-link" placeholder="https://...">`;
         container.appendChild(newRow);
     }
-
-    if (rows.length === 5) {
-        const btn = document.getElementById('add-social');
-        if (btn) btn.style.display = 'none';
-    }
+    if (rows.length === 5) document.getElementById('add-social').style.display = 'none';
 }
 
+// --- MAPPA E PICKER ---
+
 async function openMapPicker() {
+    document.getElementById('map-picker-modal').style.display = 'flex';
     document.getElementById('map-picker-modal').classList.remove('hidden');
     if (!pickerMap) {
         pickerMap = L.map('picker-map').setView([46.14, 12.21], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(pickerMap);
         pickerMap.on('click', (e) => updatePickerMarker([e.latlng.lat, e.latlng.lng]));
-    }
-    const city = document.getElementById('main-loc').value;
-    if (city) {
-        try {
-            const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city + ', Belluno')}`);
-            const d = await r.json();
-            if (d[0]) {
-                const pos = [d[0].lat, d[0].lon];
-                pickerMap.setView(pos, 14);
-                updatePickerMarker(pos);
-            }
-        } catch (e) {}
     }
     setTimeout(() => pickerMap.invalidateSize(), 300);
 }
@@ -145,13 +118,7 @@ async function openMapPicker() {
 function updatePickerMarker(latlng) {
     tempCoords = latlng;
     if (pickerMarker) pickerMarker.setLatLng(latlng);
-    else {
-        pickerMarker = L.marker(latlng, {draggable: true}).addTo(pickerMap);
-        pickerMarker.on('dragend', (e) => {
-            const p = e.target.getLatLng();
-            tempCoords = [p.lat, p.lng];
-        });
-    }
+    else pickerMarker = L.marker(latlng, {draggable: true}).addTo(pickerMap);
 }
 
 function confirmPicker() {
@@ -162,21 +129,83 @@ function confirmPicker() {
     }
 }
 
-function closeMapPicker() { document.getElementById('map-picker-modal').classList.add('hidden'); }
+function closeMapPicker() { 
+    document.getElementById('map-picker-modal').classList.add('hidden');
+    document.getElementById('map-picker-modal').style.display = 'none';
+}
+
+// --- INVIO FINALE ---
 
 async function submitForm() {
+    const form = document.getElementById('place-form');
+
+    // Recupero ID per validazione manuale rapida
+    const fields = {
+        name: document.getElementById('place-name').value,
+        city: document.getElementById('main-loc').value,
+        sub: document.getElementById('sub-loc').value,
+        addr: document.getElementById('address').value,
+        macro: document.getElementById('macro-type').value,
+        subt: document.getElementById('sub-type').value,
+        mgmt: document.getElementById('management').value
+    };
+
+    // Controllo obbligatorietà
+    if (!fields.name || !fields.city || !fields.sub || !fields.addr || !fields.macro || !fields.subt || !fields.mgmt) {
+        alert("Compila tutti i campi obbligatori contrassegnati con *");
+        return;
+    }
+
+    // Raccolta dati completa
+    const finalData = {
+        user: JSON.parse(localStorage.getItem('user_data')),
+        place: {
+            nome: fields.name,
+            descrizione: document.getElementById('place-desc').value,
+            comune: fields.city,
+            localita: fields.sub === 'altro' ? document.getElementById('other-loc').value : fields.sub,
+            indirizzo: fields.addr,
+            categoria: fields.macro,
+            sottocategoria: fields.subt === 'altro' ? document.getElementById('other-subtype').value : fields.subt,
+            gestore_tipo: fields.mgmt === 'altro' ? document.getElementById('other-mgmt').value : fields.mgmt,
+            gestore_nome: document.getElementById('management-name').value,
+            social: Array.from(document.querySelectorAll('.social-link')).map(i => i.value).filter(v => v),
+            coords: document.getElementById('manual-coords').value
+        }
+    };
+
+    console.log("Dati inviati:", finalData);
+
+    // Cambio Schermata
     document.getElementById('place-form').classList.add('hidden');
     document.getElementById('success-screen').classList.remove('hidden');
+
+    // Mappa Finale
     if (!map) {
         map = L.map('map').setView([46.14, 12.21], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     }
-    let latlng = document.getElementById('manual-coords').value ? 
-                 JSON.parse(document.getElementById('manual-coords').value) : [46.14, 12.21];
+
+    let latlng = [46.14, 12.21];
+    if (finalData.place.coords) {
+        latlng = JSON.parse(finalData.place.coords);
+    } else {
+        try {
+            const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fields.addr + "," + fields.city)}`);
+            const d = await r.json();
+            if (d.length > 0) latlng = [d[0].lat, d[0].lon];
+        } catch (e) {}
+    }
+
     map.setView(latlng, 16);
     if (marker) marker.remove();
-    marker = L.marker(latlng, {draggable: false}).addTo(map);
+    marker = L.marker(latlng).addTo(map).bindPopup(`<b>${fields.name}</b>`).openPopup();
     setTimeout(() => map.invalidateSize(), 300);
+}
+
+function resetUser() {
+    localStorage.removeItem('user_data');
+    location.reload();
 }
 
 window.onload = () => {
@@ -185,13 +214,12 @@ window.onload = () => {
         sel.innerHTML = '<option value="" disabled selected>Scegli Comune...</option>';
         Object.keys(locationData).sort().forEach(l => sel.innerHTML += `<option value="${l}">${l}</option>`);
     }
-    
-    document.querySelectorAll('.social-link').forEach(input => {
-        input.addEventListener('input', function() {
-            this.value = this.value.replace(/\s+/g, '');
-        });
-    });
-
-    const s = localStorage.getItem('user_data');
-    if (s) showForm(JSON.parse(s).nome);
+    const saved = localStorage.getItem('user_data');
+    if (saved) {
+        const d = JSON.parse(saved);
+        document.getElementById('user-name').value = d.nome;
+        document.getElementById('user-email').value = d.email;
+        document.getElementById('user-dob').value = d.nascita;
+        showForm(d.nome);
+    }
 };
